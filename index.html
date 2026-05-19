@@ -606,40 +606,42 @@ function chipSet(el,key,val){
 
 function doFilter(){
   var t=S.tab;
+  S.flt={};
   if(t==='marketplace'){
-    S.flt.brand   = fv('flt-brand');
-    S.flt.motor   = fv('flt-motor');
-    S.flt.battery = fv('flt-battery');
-    S.flt.seats   = fv('flt-seats');
-    S.flt.condition = fv('flt-condition');
-    S.flt.seller  = fv('flt-seller');
-    S.flt.minP    = fv('flt-minp');
-    S.flt.maxP    = fv('flt-maxp');
-    S.flt.loc     = fv('flt-loc');
+    var brand=fv('flt-brand');     if(brand)    S.flt.brand=brand;
+    var motor=fv('flt-motor');     if(motor)    S.flt.motor=motor;
+    var battery=fv('flt-battery'); if(battery)  S.flt.battery=battery;
+    var seats=fv('flt-seats');     if(seats)    S.flt.seats=seats;
+    var cond=fv('flt-condition');  if(cond)     S.flt.condition=cond;
+    var seller=fv('flt-seller');   if(seller)   S.flt.seller=seller;
+    var minp=fv('flt-minp');       if(minp)     S.flt.minP=minp;
+    var maxp=fv('flt-maxp');       if(maxp)     S.flt.maxP=maxp;
+    var loc=fv('flt-loc');         if(loc)      S.flt.loc=loc;
   }
   if(t==='parts'){
-    S.flt.pcat  = fv('flt-pcat');
-    S.flt.pfits = fv('flt-pfits');
-    S.flt.pminP = fv('flt-pmin');
-    S.flt.pmaxP = fv('flt-pmax');
+    var pcat=fv('flt-pcat');   if(pcat)  S.flt.pcat=pcat;
+    var pfits=fv('flt-pfits'); if(pfits) S.flt.pfits=pfits;
+    var pmin=fv('flt-pmin');   if(pmin)  S.flt.pminP=pmin;
+    var pmax=fv('flt-pmax');   if(pmax)  S.flt.pmaxP=pmax;
   }
   if(t==='events'){
-    S.flt.etype  = fv('flt-etype');
-    S.flt.estate = fv('flt-estate');
-    S.flt.ecity  = fv('flt-ecity');
+    var etype=fv('flt-etype');   if(etype)  S.flt.etype=etype;
+    var estate=fv('flt-estate'); if(estate) S.flt.estate=estate;
+    var ecity=fv('flt-ecity');   if(ecity)  S.flt.ecity=ecity;
   }
   if(t==='mods'){
-    S.flt.mtype  = fv('flt-mtype');
-    S.flt.msvc   = fv('flt-msvc');
-    S.flt.mcity  = fv('flt-mcity');
-    S.flt.mstate = fv('flt-mstate');
+    var mtype=fv('flt-mtype');   if(mtype)  S.flt.mtype=mtype;
+    var msvc=fv('flt-msvc');     if(msvc)   S.flt.msvc=msvc;
+    var mcity=fv('flt-mcity');   if(mcity)  S.flt.mcity=mcity;
+    var mstate=fv('flt-mstate'); if(mstate) S.flt.mstate=mstate;
   }
-  // Clean out empty strings
-  Object.keys(S.flt).forEach(function(k){if(!S.flt[k])delete S.flt[k];});
+  var fkeys=Object.keys(S.flt);
   var matches=filteredListings();
-  var activeKeys=Object.keys(S.flt);
-  toast((activeKeys.length?'Filters: '+activeKeys.map(function(k){return k+'='+S.flt[k];}).join(', '):'No filters')+' → '+matches.length+' results');
-  console.log('S.flt=',JSON.stringify(S.flt),'S.sub=',S.sub,'matches=',matches.length);
+  var msg=fkeys.length
+    ?'Filters: '+fkeys.map(function(k){return k+'='+S.flt[k];}).join(', ')+' → '+matches.length+' results'
+    :'No filters selected — showing all '+matches.length;
+  toast(msg);
+  console.log('doFilter',msg,'S.sub=',S.sub);
   renderMain();
 }
 
@@ -767,27 +769,29 @@ function renderSidebar(){
 // FILTER LOGIC
 // ═══════════════════════════════════════
 function filteredListings(){
-  var f=S.flt,q=S.q.toLowerCase(),sub=S.sub;
+  var f=S.flt;
+  var q=S.q.toLowerCase();
+  var sub=S.sub;
   var hasFilters=Object.keys(f).length>0;
+
   return LISTINGS.filter(function(l){
-    // Only filter by sub-type if no other filters active and no search
-    if(!hasFilters && !q && l.type!==sub) return false;
-    // If filters active but no sub restriction — still limit to buy/sell/trade/rent types
+    // Must be a marketplace listing type
     if(l.type!=='buy'&&l.type!=='sell'&&l.type!=='trade'&&l.type!=='rent') return false;
-    // When filters active, search across all listing types unless sub is specifically chosen
-    if(!hasFilters && !q && l.type!==sub) return false;
-    if(f.brand     && l.brand!==f.brand) return false;
-    if(f.motor     && l.motor!==f.motor) return false;
-    if(f.battery   && l.battery!==f.battery) return false;
-    if(f.seats     && String(l.seats)!==String(f.seats)) return false;
-    if(f.condition && l.condition!==f.condition) return false;
-    if(f.seller    && l.cat!==f.seller) return false;
-    if(f.minP      && l.price<parseInt(f.minP)) return false;
-    if(f.maxP      && l.price>parseInt(f.maxP)) return false;
-    if(f.loc       && l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
+    // If no filters and no search, only show current sub-tab type
+    if(!hasFilters&&!q&&l.type!==sub) return false;
+    // Apply each filter
+    if(f.brand     &&l.brand!==f.brand) return false;
+    if(f.motor     &&l.motor!==f.motor) return false;
+    if(f.battery   &&l.battery!==f.battery) return false;
+    if(f.seats     &&String(l.seats)!==String(f.seats)) return false;
+    if(f.condition &&l.condition!==f.condition) return false;
+    if(f.seller    &&l.cat!==f.seller) return false;
+    if(f.minP      &&l.price<parseInt(f.minP)) return false;
+    if(f.maxP      &&l.price>parseInt(f.maxP)) return false;
+    if(f.loc       &&l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
     if(q){
-      var h=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+l.type+' '+(l.features||[]).join(' ')).toLowerCase();
-      if(h.indexOf(q)<0) return false;
+      var str=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+(l.features||[]).join(' ')).toLowerCase();
+      if(str.indexOf(q)<0) return false;
     }
     return true;
   });
