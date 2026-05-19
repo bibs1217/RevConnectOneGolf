@@ -591,10 +591,9 @@ function setSub(s){
 }
 function onSearch(){S.q=document.getElementById('gsearch')?document.getElementById('gsearch').value:'';renderMain();}
 function clearAll(){
-  S.flt={};S.q='';
-  document.querySelectorAll('.fi').forEach(function(el){el.value='';});
-  document.querySelectorAll('.chip').forEach(function(el){el.classList.remove('on');});
+  S.flt={};S.q='';S.sub='buy';
   if(document.getElementById('gsearch'))document.getElementById('gsearch').value='';
+  renderSidebar();
   renderMain();
 }
 function chipSet(el,key,val){
