@@ -573,13 +573,15 @@ function fv(id){var e=document.getElementById(id);return e?e.value:'';}
 // ═══════════════════════════════════════
 function switchTab(t){
   if(t!=='sell') uploadedPhotos=[];
-  S.tab=t;S.q=document.getElementById('gsearch')?document.getElementById('gsearch').value:'';
+  S.tab=t;S.flt={};S.q=''; // clear filters when switching tabs
+  S.sub='buy'; // reset sub-tab
   document.querySelectorAll('.tb').forEach(function(el){el.classList.remove('on');});
   var el=document.getElementById('tb-'+t);if(el)el.classList.add('on');
   document.querySelectorAll('.hd-tab').forEach(function(el){el.classList.remove('on');});
   var hel=document.getElementById('ht-'+t);if(hel)hel.classList.add('on');
   var hero=document.getElementById('heroWrap');if(hero)hero.style.display=(t==='marketplace'||t==='sell')?'':'none';
-  renderSidebar();renderMain();
+  renderSidebar(); // only render sidebar on tab switch
+  renderMain();
 }
 function setSub(s){
   S.sub=s;
@@ -599,15 +601,31 @@ function chipSet(el,key,val){
   var on=el.classList.contains('on');
   document.querySelectorAll('[data-grp="'+key+'"]').forEach(function(c){c.classList.remove('on');});
   if(!on){el.classList.add('on');S.flt[key]=val;}else{delete S.flt[key];}
-  renderMain();
+  renderMain(); // sidebar stays intact, only main updates
 }
 function doFilter(){
   var t=S.tab;
-  if(t==='marketplace'){S.flt.brand=fv('fb');S.flt.motor=fv('fm');S.flt.battery=fv('fbt');S.flt.seats=fv('fst');S.flt.condition=fv('fc');S.flt.seller=fv('fsl');S.flt.minP=fv('fmin');S.flt.maxP=fv('fmax');S.flt.loc=fv('floc');}
-  if(t==='parts'){S.flt.pcat=fv('fp_cat');S.flt.pfits=fv('fp_fits');S.flt.pbrand=fv('fp_brand');S.flt.pminP=fv('fp_min');S.flt.pmaxP=fv('fp_max');S.flt.ploc=fv('fp_loc');}
-  if(t==='events'){S.flt.etype=fv('fe_type');S.flt.estate=fv('fe_state');S.flt.ecity=fv('fe_city');}
-  if(t==='mods'){S.flt.mtype=fv('fm_type');S.flt.mcity=fv('fm_city');S.flt.mstate=fv('fm_state');S.flt.msvc=fv('fm_svc');}
-  renderMain();
+  // Read text/select inputs and merge into S.flt (don't overwrite chip selections)
+  if(t==='marketplace'){
+    if(fv('fmin'))S.flt.minP=fv('fmin'); else delete S.flt.minP;
+    if(fv('fmax'))S.flt.maxP=fv('fmax'); else delete S.flt.maxP;
+    if(fv('floc'))S.flt.loc=fv('floc'); else delete S.flt.loc;
+  }
+  if(t==='parts'){
+    if(fv('fp_fits'))S.flt.pfits=fv('fp_fits'); else delete S.flt.pfits;
+    if(fv('fp_min'))S.flt.pminP=fv('fp_min'); else delete S.flt.pminP;
+    if(fv('fp_max'))S.flt.pmaxP=fv('fp_max'); else delete S.flt.pmaxP;
+  }
+  if(t==='events'){
+    if(fv('fe_state'))S.flt.estate=fv('fe_state'); else delete S.flt.estate;
+    if(fv('fe_city'))S.flt.ecity=fv('fe_city'); else delete S.flt.ecity;
+  }
+  if(t==='mods'){
+    if(fv('fm_svc'))S.flt.msvc=fv('fm_svc'); else delete S.flt.msvc;
+    if(fv('fm_city'))S.flt.mcity=fv('fm_city'); else delete S.flt.mcity;
+    if(fv('fm_state'))S.flt.mstate=fv('fm_state'); else delete S.flt.mstate;
+  }
+  renderMain(); // only re-render main, NOT sidebar — keeps inputs alive
 }
 
 // ═══════════════════════════════════════
@@ -616,50 +634,90 @@ function doFilter(){
 function renderSidebar(){
   var sb=document.getElementById('sidebar');if(!sb)return;
   var t=S.tab;if(t==='sell'){sb.innerHTML='';return;}
+  var f=S.flt;
   var h='<div class="sb-head">Filters <span class="sb-clr" onclick="clearAll()">Clear All<\/span><\/div>';
   if(t==='marketplace'){
+    // Brand chips — restore active state from S.flt
     h+='<div class="fsec"><div class="flbl">Brand<\/div><div class="chips">';
-    ['Club Car','EZ-GO','Yamaha','Polaris','ICON','Bintelli'].forEach(function(b){h+='<div class="chip" data-grp="brand" onclick="chipSet(this,\'brand\',\''+b+'\')">'+b+'<\/div>';});
+    ['Club Car','EZ-GO','Yamaha','Polaris','ICON','Bintelli'].forEach(function(b){
+      var on=f.brand===b?' on':'';
+      h+='<div class="chip'+on+'" data-grp="brand" onclick="chipSet(this,\'brand\',\''+b+'\')">'+b+'<\/div>';
+    });
     h+='<\/div><\/div>';
+    // Motor chips
     h+='<div class="fsec"><div class="flbl">Motor<\/div><div class="chips">';
-    ['Electric','Gas'].forEach(function(m){h+='<div class="chip" data-grp="motor" onclick="chipSet(this,\'motor\',\''+m+'\')">'+m+'<\/div>';});
+    ['Electric','Gas'].forEach(function(m){
+      var on=f.motor===m?' on':'';
+      h+='<div class="chip'+on+'" data-grp="motor" onclick="chipSet(this,\'motor\',\''+m+'\')">'+m+'<\/div>';
+    });
     h+='<\/div><\/div>';
+    // Battery chips
     h+='<div class="fsec"><div class="flbl">Battery<\/div><div class="chips">';
-    ['Lithium','Lead Acid'].forEach(function(b){h+='<div class="chip" data-grp="battery" onclick="chipSet(this,\'battery\',\''+b+'\')">'+b+'<\/div>';});
+    ['Lithium','Lead Acid'].forEach(function(b){
+      var on=f.battery===b?' on':'';
+      h+='<div class="chip'+on+'" data-grp="battery" onclick="chipSet(this,\'battery\',\''+b+'\')">'+b+'<\/div>';
+    });
     h+='<\/div><\/div>';
+    // Seats chips
     h+='<div class="fsec"><div class="flbl">Seats<\/div><div class="chips">';
-    ['2','4','6'].forEach(function(s){h+='<div class="chip" data-grp="seats" onclick="chipSet(this,\'seats\',\''+s+'\')">'+s+' Seat<\/div>';});
+    ['2','4','6'].forEach(function(s){
+      var on=f.seats===s?' on':'';
+      h+='<div class="chip'+on+'" data-grp="seats" onclick="chipSet(this,\'seats\',\''+s+'\')">'+s+' Seat<\/div>';
+    });
     h+='<\/div><\/div>';
+    // Condition chips
     h+='<div class="fsec"><div class="flbl">Condition<\/div><div class="chips">';
-    ['New','Excellent','Used','Good'].forEach(function(c){h+='<div class="chip" data-grp="condition" onclick="chipSet(this,\'condition\',\''+c+'\')">'+c+'<\/div>';});
+    ['New','Excellent','Used','Good'].forEach(function(c){
+      var on=f.condition===c?' on':'';
+      h+='<div class="chip'+on+'" data-grp="condition" onclick="chipSet(this,\'condition\',\''+c+'\')">'+c+'<\/div>';
+    });
     h+='<\/div><\/div>';
+    // Seller chips
     h+='<div class="fsec"><div class="flbl">Seller Type<\/div><div class="chips">';
-    [['dealer','Dealer'],['private','Private'],['online','Online']].forEach(function(x){h+='<div class="chip" data-grp="seller" onclick="chipSet(this,\'seller\',\''+x[0]+'\')">'+x[1]+'<\/div>';});
+    [['dealer','Dealer'],['private','Private'],['online','Online']].forEach(function(x){
+      var on=f.seller===x[0]?' on':'';
+      h+='<div class="chip'+on+'" data-grp="seller" onclick="chipSet(this,\'seller\',\''+x[0]+'\')">'+x[1]+'<\/div>';
+    });
     h+='<\/div><\/div>';
-    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow"><input class="fi" id="fmin" type="number" placeholder="Min $" oninput="doFilter()"><input class="fi" id="fmax" type="number" placeholder="Max $" oninput="doFilter()"><\/div><\/div>';
-    h+='<div class="fsec"><div class="flbl">Location<\/div><input class="fi" id="floc" type="text" placeholder="City, State or ZIP" oninput="doFilter()"><\/div>';
+    // Price inputs — restore values
+    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow">'
+      +'<input class="fi" id="fmin" type="number" placeholder="Min $" value="'+(f.minP||'')+'" oninput="doFilter()">'
+      +'<input class="fi" id="fmax" type="number" placeholder="Max $" value="'+(f.maxP||'')+'" oninput="doFilter()">'
+      +'<\/div><\/div>';
+    // Location input — restore value
+    h+='<div class="fsec"><div class="flbl">Location<\/div>'
+      +'<input class="fi" id="floc" type="text" placeholder="City, State or ZIP" value="'+(f.loc||'')+'" oninput="doFilter()"><\/div>';
   }
   if(t==='parts'){
     h+='<div class="fsec"><div class="flbl">Category<\/div><div class="chips">';
-    ['Batteries','Suspension','Electrical','Wheels','Tires','Body','Seating','Lighting','Audio','Accessories'].forEach(function(c){h+='<div class="chip" data-grp="pcat" onclick="chipSet(this,\'pcat\',\''+c+'\')">'+c+'<\/div>';});
+    ['Batteries','Suspension','Electrical','Wheels','Tires','Body','Seating','Lighting','Audio','Accessories'].forEach(function(c){
+      var on=f.pcat===c?' on':'';
+      h+='<div class="chip'+on+'" data-grp="pcat" onclick="chipSet(this,\'pcat\',\''+c+'\')">'+c+'<\/div>';
+    });
     h+='<\/div><\/div>';
-    h+='<div class="fsec"><div class="flbl">Fits My Cart<\/div><select class="fi" id="fp_fits" onchange="doFilter()"><option value="">All Brands<\/option><option>Club Car<\/option><option>EZ-GO<\/option><option>Yamaha<\/option><option>Polaris<\/option><option>Universal<\/option><\/select><\/div>';
-    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow"><input class="fi" id="fp_min" type="number" placeholder="Min $" oninput="doFilter()"><input class="fi" id="fp_max" type="number" placeholder="Max $" oninput="doFilter()"><\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Fits My Cart<\/div><select class="fi" id="fp_fits" onchange="doFilter()"><option value="">All Brands<\/option><option'+(f.pfits==='Club Car'?' selected':'')+'>Club Car<\/option><option'+(f.pfits==='EZ-GO'?' selected':'')+'>EZ-GO<\/option><option'+(f.pfits==='Yamaha'?' selected':'')+'>Yamaha<\/option><option'+(f.pfits==='Polaris'?' selected':'')+'>Polaris<\/option><option'+(f.pfits==='Universal'?' selected':'')+'>Universal<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow"><input class="fi" id="fp_min" type="number" placeholder="Min $" value="'+(f.pminP||'')+'" oninput="doFilter()"><input class="fi" id="fp_max" type="number" placeholder="Max $" value="'+(f.pmaxP||'')+'" oninput="doFilter()"><\/div><\/div>';
   }
   if(t==='events'){
     h+='<div class="fsec"><div class="flbl">Event Type<\/div><div class="chips">';
-    ['Show','Meet','Expo','Cruise','Charity'].forEach(function(tp){h+='<div class="chip" data-grp="etype" onclick="chipSet(this,\'etype\',\''+tp+'\')">'+tp+'<\/div>';});
+    ['Show','Meet','Expo','Cruise','Charity'].forEach(function(tp){
+      var on=f.etype===tp?' on':'';
+      h+='<div class="chip'+on+'" data-grp="etype" onclick="chipSet(this,\'etype\',\''+tp+'\')">'+tp+'<\/div>';
+    });
     h+='<\/div><\/div>';
-    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fe_state" onchange="doFilter()"><option value="">All States<\/option><option>FL<\/option><option>GA<\/option><option>TX<\/option><option>CA<\/option><option>NC<\/option><\/select><\/div>';
-    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fe_city" type="text" placeholder="e.g. Naples, Tampa..." oninput="doFilter()"><\/div>';
+    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fe_state" onchange="doFilter()"><option value="">All States<\/option><option'+(f.estate==='FL'?' selected':'')+'>FL<\/option><option'+(f.estate==='GA'?' selected':'')+'>GA<\/option><option'+(f.estate==='TX'?' selected':'')+'>TX<\/option><option'+(f.estate==='CA'?' selected':'')+'>CA<\/option><option'+(f.estate==='NC'?' selected':'')+'>NC<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fe_city" type="text" placeholder="e.g. Naples, Tampa..." value="'+(f.ecity||'')+'" oninput="doFilter()"><\/div>';
   }
   if(t==='mods'){
     h+='<div class="fsec"><div class="flbl">Shop Type<\/div><div class="chips">';
-    ['Full Service','Electric Specialist','Suspension and Lift','Wraps and Paint','Audio and Electronics','Performance Shop','Battery and Charging'].forEach(function(tp){h+='<div class="chip" data-grp="mtype" onclick="chipSet(this,\'mtype\',\''+tp+'\')">'+tp+'<\/div>';});
+    ['Full Service','Electric Specialist','Suspension and Lift','Wraps and Paint','Audio and Electronics','Performance Shop','Battery and Charging'].forEach(function(tp){
+      var on=f.mtype&&f.mtype===tp?' on':'';
+      h+='<div class="chip'+on+'" data-grp="mtype" onclick="chipSet(this,\'mtype\',\''+tp+'\')">'+tp+'<\/div>';
+    });
     h+='<\/div><\/div>';
-    h+='<div class="fsec"><div class="flbl">Service Needed<\/div><select class="fi" id="fm_svc" onchange="doFilter()"><option value="">Any Service<\/option><option>Lift Kit<\/option><option>Lithium Conversion<\/option><option>Custom Paint<\/option><option>Wrap<\/option><option>Sound System<\/option><option>LED Lighting<\/option><option>Performance Tuning<\/option><option>Street Legal Build<\/option><\/select><\/div>';
-    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fm_city" type="text" placeholder="e.g. Naples, Tampa..." oninput="doFilter()"><\/div>';
-    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fm_state" onchange="doFilter()"><option value="">All States<\/option><option>FL<\/option><option>GA<\/option><option>TX<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">Service Needed<\/div><select class="fi" id="fm_svc" onchange="doFilter()"><option value="">Any Service<\/option><option'+(f.msvc==='Lift Kit'?' selected':'')+'>Lift Kit<\/option><option'+(f.msvc==='Lithium Conversion'?' selected':'')+'>Lithium Conversion<\/option><option'+(f.msvc==='Custom Paint'?' selected':'')+'>Custom Paint<\/option><option'+(f.msvc==='Wrap'?' selected':'')+'>Wrap<\/option><option'+(f.msvc==='Sound System'?' selected':'')+'>Sound System<\/option><option'+(f.msvc==='LED Lighting'?' selected':'')+'>LED Lighting<\/option><option'+(f.msvc==='Performance Tuning'?' selected':'')+'>Performance Tuning<\/option><option'+(f.msvc==='Street Legal Build'?' selected':'')+'>Street Legal Build<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fm_city" type="text" placeholder="e.g. Naples, Tampa..." value="'+(f.mcity||'')+'" oninput="doFilter()"><\/div>';
+    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fm_state" onchange="doFilter()"><option value="">All States<\/option><option'+(f.mstate==='FL'?' selected':'')+'>FL<\/option><option'+(f.mstate==='GA'?' selected':'')+'>GA<\/option><option'+(f.mstate==='TX'?' selected':'')+'>TX<\/option><\/select><\/div>';
   }
   h+='<button class="apply-btn" onclick="doFilter()">Apply Filters<\/button>';
   sb.innerHTML=h;
