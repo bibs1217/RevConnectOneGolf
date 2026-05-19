@@ -610,61 +610,14 @@ function doFilter(){
 }
 
 // ═══════════════════════════════════════
-// SIDEBAR — uses selects so values survive re-renders
-// ═══════════════════════════════════════
 function renderSidebar(){
   var sb=document.getElementById('sidebar');if(!sb)return;
-  var t=S.tab;if(t==='sell'){sb.innerHTML='';return;}
+  var t=S.tab;
+  // Marketplace filters are inline in main content — sidebar not needed
+  if(t==='sell'||t==='marketplace'){sb.innerHTML='';return;}
   var f=S.flt;
   var opt=function(val,label,cur){return'<option value="'+val+'"'+(cur===val?' selected':'')+'>'+label+'</option>';};
   var h='<div class="sb-head">Filters <span class="sb-clr" onclick="clearAll()">Clear All</span></div>';
-
-  if(t==='marketplace'){
-    h+='<div class="fsec"><div class="flbl">Brand</div>'
-      +'<select class="fi" id="flt-brand">'
-      +opt('','All Brands',f.brand)
-      +['Club Car','EZ-GO','Yamaha','Polaris','ICON','Bintelli'].map(function(b){return opt(b,b,f.brand);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Motor</div>'
-      +'<select class="fi" id="flt-motor">'
-      +opt('','Any Motor',f.motor)
-      +['Electric','Gas'].map(function(v){return opt(v,v,f.motor);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Battery</div>'
-      +'<select class="fi" id="flt-battery">'
-      +opt('','Any Battery',f.battery)
-      +['Lithium','Lead Acid'].map(function(v){return opt(v,v,f.battery);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Seats</div>'
-      +'<select class="fi" id="flt-seats">'
-      +opt('','Any Seats',f.seats)
-      +['2','4','6'].map(function(v){return opt(v,v+' Seat',f.seats);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Condition</div>'
-      +'<select class="fi" id="flt-condition">'
-      +opt('','Any Condition',f.condition)
-      +['New','Excellent','Used','Good'].map(function(v){return opt(v,v,f.condition);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Seller Type</div>'
-      +'<select class="fi" id="flt-seller">'
-      +opt('','Any Seller',f.seller)
-      +[['dealer','Dealer'],['private','Private'],['online','Online']].map(function(x){return opt(x[0],x[1],f.seller);}).join('')
-      +'</select></div>';
-
-    h+='<div class="fsec"><div class="flbl">Min Price</div>'
-      +'<input class="fi" id="flt-minp" type="number" placeholder="e.g. 2000" value="'+(f.minP||'')+'"></div>';
-
-    h+='<div class="fsec"><div class="flbl">Max Price</div>'
-      +'<input class="fi" id="flt-maxp" type="number" placeholder="e.g. 15000" value="'+(f.maxP||'')+'"></div>';
-
-    h+='<div class="fsec"><div class="flbl">Location</div>'
-      +'<input class="fi" id="flt-loc" type="text" placeholder="City, State or ZIP" value="'+(f.loc||'')+'"></div>';
-  }
 
   if(t==='parts'){
     h+='<div class="fsec"><div class="flbl">Category</div>'
@@ -672,60 +625,52 @@ function renderSidebar(){
       +opt('','All Categories',f.pcat)
       +['Batteries','Suspension','Electrical','Wheels','Tires','Body','Seating','Lighting','Audio','Accessories'].map(function(v){return opt(v,v,f.pcat);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">Fits My Cart</div>'
       +'<select class="fi" id="flt-pfits">'
       +opt('','All Brands',f.pfits)
       +['Club Car','EZ-GO','Yamaha','Polaris','Universal'].map(function(v){return opt(v,v,f.pfits);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">Min Price</div>'
       +'<input class="fi" id="flt-pmin" type="number" placeholder="Min $" value="'+(f.pminP||'')+'"></div>';
     h+='<div class="fsec"><div class="flbl">Max Price</div>'
       +'<input class="fi" id="flt-pmax" type="number" placeholder="Max $" value="'+(f.pmaxP||'')+'"></div>';
   }
-
   if(t==='events'){
     h+='<div class="fsec"><div class="flbl">Event Type</div>'
       +'<select class="fi" id="flt-etype">'
       +opt('','All Types',f.etype)
       +['Show','Meet','Expo','Cruise','Charity'].map(function(v){return opt(v,v,f.etype);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">State</div>'
       +'<select class="fi" id="flt-estate">'
       +opt('','All States',f.estate)
       +['FL','GA','TX','CA','NC'].map(function(v){return opt(v,v,f.estate);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">City</div>'
       +'<input class="fi" id="flt-ecity" type="text" placeholder="e.g. Naples, Tampa..." value="'+(f.ecity||'')+'"></div>';
   }
-
   if(t==='mods'){
     h+='<div class="fsec"><div class="flbl">Shop Type</div>'
       +'<select class="fi" id="flt-mtype">'
       +opt('','All Types',f.mtype)
       +['Full Service','Electric Specialist','Suspension and Lift','Wraps and Paint','Audio and Electronics','Performance Shop','Battery and Charging'].map(function(v){return opt(v,v,f.mtype);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">Service Needed</div>'
       +'<select class="fi" id="flt-msvc">'
       +opt('','Any Service',f.msvc)
       +['Lift Kit','Lithium Conversion','Custom Paint','Wrap','Sound System','LED Lighting','Performance Tuning','Street Legal Build'].map(function(v){return opt(v,v,f.msvc);}).join('')
       +'</select></div>';
-
     h+='<div class="fsec"><div class="flbl">City</div>'
       +'<input class="fi" id="flt-mcity" type="text" placeholder="e.g. Naples, Tampa..." value="'+(f.mcity||'')+'"></div>';
-
     h+='<div class="fsec"><div class="flbl">State</div>'
       +'<select class="fi" id="flt-mstate">'
       +opt('','All States',f.mstate)
       +['FL','GA','TX'].map(function(v){return opt(v,v,f.mstate);}).join('')
       +'</select></div>';
   }
-
-  h+='<div style="font-size:11px;color:var(--txt3);text-align:center;padding:.5rem 0">Use the filter panel in the main area to filter listings</div>';
+  if(t!=='marketplace'){
+    h+='<button class="apply-btn" onclick="doFilter()">Apply Filters</button>';
+  }
   sb.innerHTML=h;
 }
 
