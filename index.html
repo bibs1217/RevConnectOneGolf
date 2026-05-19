@@ -636,6 +636,14 @@ function doFilter(){
   }
   // Clean out empty strings
   Object.keys(S.flt).forEach(function(k){if(!S.flt[k])delete S.flt[k];});
+  // DEBUG — show what filters are active
+  var activeKeys=Object.keys(S.flt);
+  if(activeKeys.length){
+    toast('Filters: '+activeKeys.map(function(k){return k+'='+S.flt[k];}).join(', '));
+  } else {
+    toast('No filters set — showing all');
+  }
+  console.log('S.flt=',JSON.stringify(S.flt),'S.sub=',S.sub,'LISTINGS count=',LISTINGS.length);
   renderMain();
 }
 
