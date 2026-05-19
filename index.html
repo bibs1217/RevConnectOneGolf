@@ -697,7 +697,12 @@ function filteredListings(){
     if(f.seller    &&l.cat!==f.seller) return false;
     if(f.minP      &&l.price<parseInt(f.minP)) return false;
     if(f.maxP      &&l.price>parseInt(f.maxP)) return false;
-    if(f.loc       &&l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
+    if(f.loc){
+      var locQ=f.loc.toLowerCase();
+      // Match against city, state, zip, or full location string
+      var locStr=(l.loc+' '+(l.city||'')+' '+(l.state||'')+' '+(l.zip||'')).toLowerCase();
+      if(locStr.indexOf(locQ)<0) return false;
+    }
     if(q){
       var str=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+(l.features||[]).join(' ')).toLowerCase();
       if(str.indexOf(q)<0) return false;
@@ -897,7 +902,14 @@ function renderMarket(){
 
   if(!items.length){
     h+='<div class="empty"><div class="empty-ico">\uD83D\uDD0D</div><div class="empty-t">No Listings Match</div>';
-    h+='<div class="empty-s">Adjust your filters above or use the search to find carts from dealers and private sellers nationwide.</div>';
+    var activeF=Object.keys(S.flt);
+    if(S.flt.loc){
+      h+='<div class="empty-s">Location filter "<strong>'+S.flt.loc+'</strong>" found no matches.<br><br>Tip: search by city name (e.g. "Tampa" or "Naples") — ZIP codes are not supported for the sample listings.</div>';
+    } else if(activeF.length){
+      h+='<div class="empty-s">No carts match: '+activeF.map(function(k){return'<strong>'+S.flt[k]+'</strong>';}).join(' + ')+'.<br>Try removing some filters.</div>';
+    } else {
+      h+='<div class="empty-s">Try adjusting your filters or use the search bar above to find carts nationwide.</div>';
+    }
     h+='<button onclick="clearAll()" style="margin-top:1rem;padding:8px 20px;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer">Clear All Filters</button>';
     h+='</div>';
   } else {
