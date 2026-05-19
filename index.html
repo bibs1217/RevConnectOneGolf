@@ -605,44 +605,8 @@ function chipSet(el,key,val){
 }
 
 function doFilter(){
-  var t=S.tab;
-  S.flt={};
-  if(t==='marketplace'){
-    var brand=fv('flt-brand');     if(brand)    S.flt.brand=brand;
-    var motor=fv('flt-motor');     if(motor)    S.flt.motor=motor;
-    var battery=fv('flt-battery'); if(battery)  S.flt.battery=battery;
-    var seats=fv('flt-seats');     if(seats)    S.flt.seats=seats;
-    var cond=fv('flt-condition');  if(cond)     S.flt.condition=cond;
-    var seller=fv('flt-seller');   if(seller)   S.flt.seller=seller;
-    var minp=fv('flt-minp');       if(minp)     S.flt.minP=minp;
-    var maxp=fv('flt-maxp');       if(maxp)     S.flt.maxP=maxp;
-    var loc=fv('flt-loc');         if(loc)      S.flt.loc=loc;
-  }
-  if(t==='parts'){
-    var pcat=fv('flt-pcat');   if(pcat)  S.flt.pcat=pcat;
-    var pfits=fv('flt-pfits'); if(pfits) S.flt.pfits=pfits;
-    var pmin=fv('flt-pmin');   if(pmin)  S.flt.pminP=pmin;
-    var pmax=fv('flt-pmax');   if(pmax)  S.flt.pmaxP=pmax;
-  }
-  if(t==='events'){
-    var etype=fv('flt-etype');   if(etype)  S.flt.etype=etype;
-    var estate=fv('flt-estate'); if(estate) S.flt.estate=estate;
-    var ecity=fv('flt-ecity');   if(ecity)  S.flt.ecity=ecity;
-  }
-  if(t==='mods'){
-    var mtype=fv('flt-mtype');   if(mtype)  S.flt.mtype=mtype;
-    var msvc=fv('flt-msvc');     if(msvc)   S.flt.msvc=msvc;
-    var mcity=fv('flt-mcity');   if(mcity)  S.flt.mcity=mcity;
-    var mstate=fv('flt-mstate'); if(mstate) S.flt.mstate=mstate;
-  }
-  var fkeys=Object.keys(S.flt);
-  var matches=filteredListings();
-  var msg=fkeys.length
-    ?'Filters: '+fkeys.map(function(k){return k+'='+S.flt[k];}).join(', ')+' → '+matches.length+' results'
-    :'No filters selected — showing all '+matches.length;
-  toast(msg);
-  console.log('doFilter',msg,'S.sub=',S.sub);
-  renderMain();
+  // Read from inline filter panel (always in DOM in main content)
+  applyInlineFilters();
 }
 
 // ═══════════════════════════════════════
@@ -761,7 +725,7 @@ function renderSidebar(){
       +'</select></div>';
   }
 
-  h+='<button class="apply-btn" onclick="doFilter()">Apply Filters</button>';
+  h+='<div style="font-size:11px;color:var(--txt3);text-align:center;padding:.5rem 0">Use the filter panel in the main area to filter listings</div>';
   sb.innerHTML=h;
 }
 
