@@ -349,6 +349,29 @@ textarea.m-fi{resize:vertical;min-height:72px}
 
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
+var COUNTY_MAP={
+  // Florida
+  'Naples':'Collier','Fort Myers':'Lee','Bonita Springs':'Lee','Marco Island':'Collier',
+  'Sarasota':'Sarasota','Bradenton':'Manatee',
+  'Tampa':'Hillsborough','Brandon':'Hillsborough','Riverview':'Hillsborough',
+  'Clearwater':'Pinellas','Clearwater Beach':'Pinellas','St. Petersburg':'Pinellas','St Pete':'Pinellas','Pinellas Park':'Pinellas','Dunedin':'Pinellas','Largo':'Pinellas','Tarpon Springs':'Pinellas',
+  'Orlando':'Orange','Kissimmee':'Osceola',
+  'Miami':'Miami-Dade','Fort Lauderdale':'Broward','Boca Raton':'Palm Beach','West Palm Beach':'Palm Beach',
+  'Jacksonville':'Duval','Daytona Beach':'Volusia','Gainesville':'Alachua','Tallahassee':'Leon',
+  'Lakeland':'Polk','Winter Haven':'Polk','Ocala':'Marion',
+  // Georgia
+  'Atlanta':'Fulton','Savannah':'Chatham','Augusta':'Richmond','Macon':'Bibb',
+  // Texas
+  'Houston':'Harris','Dallas':'Dallas','Austin':'Travis','San Antonio':'Bexar',
+  // Carolinas
+  'Charlotte':'Mecklenburg','Raleigh':'Wake','Myrtle Beach':'Horry'
+};
+
+function getCounty(loc){
+  var city=loc.split(',')[0].trim();
+  return COUNTY_MAP[city]||'';
+}
+
 var LISTINGS=[
   // FLORIDA - BUY
   {id:1,type:'buy',cat:'dealer',brand:'Club Car',model:'Onward 4',year:2023,price:14995,miles:180,color:'Midnight Black',seats:4,motor:'Electric',battery:'Lithium',topSpeed:19,range:45,img:'🛻',loc:'Naples, FL',seller:'Sun Coast Golf Carts',badge:'Certified Dealer',condition:'New',features:['Lifted 4 inch','LED Lights','Custom Wheels','Rear Flip Seat']},
@@ -510,7 +533,13 @@ function getFilteredListings(){
     if(fSeller    && l.cat!==fSeller) return false;
     if(fMinP      && l.price<parseInt(fMinP)) return false;
     if(fMaxP      && l.price>parseInt(fMaxP)) return false;
-    if(fLoc       && l.loc.toLowerCase().indexOf(fLoc.toLowerCase())<0) return false;
+    if(fLoc){
+      var locQ=fLoc.toLowerCase()
+        .replace(' county','').replace(', fl','').replace(', ga','').replace(', tx','').replace(', nc','').replace(', sc','').trim();
+      var county=getCounty(l.loc).toLowerCase();
+      var locStr=(l.loc+' '+county).toLowerCase();
+      if(locStr.indexOf(locQ)<0) return false;
+    }
     if(q){
       var str=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+(l.features||[]).join(' ')).toLowerCase();
       if(str.indexOf(q)<0) return false;
@@ -581,7 +610,7 @@ function renderMarketplace(){
   h+=filterSelectRaw('f-seller','Seller',[['','Any Seller'],['dealer','Dealer'],['private','Private'],['online','Online']],fSeller);
   h+=filterInput('f-minp','Min $','0',fMinP,'number');
   h+=filterInput('f-maxp','Max $','No max',fMaxP,'number');
-  h+=filterInput('f-loc','Location (city)','e.g. Tampa, Naples',fLoc,'text');
+  h+=filterInput('f-loc','Location','City or County (e.g. Tampa, Pinellas)',fLoc,'text');
   h+='</div>';
   h+='<div class="filter-actions"><button class="btn-apply" id="btn-apply">✓ Apply Filters</button>';
   h+='<button class="btn-clear" id="btn-clear">Clear</button></div></div>';
