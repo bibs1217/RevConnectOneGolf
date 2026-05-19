@@ -374,6 +374,8 @@ textarea.m-fi{resize:vertical;min-height:72px}
       <button id="ht-mods" class="hd-tab" onclick="switchTab('mods')">Mods & Shops</button>
     </nav>
     <button class="hd-cta" onclick="switchTab('sell')">+ List Your Cart</button>
+    <button id="auth-btn" onclick="openAuthModal()" style="background:transparent;border:1px solid var(--bd2);border-radius:20px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;color:var(--txt2);transition:all .15s;white-space:nowrap">Sign In</button>
+    <span id="user-label" style="font-size:11px;color:var(--lime);font-family:'Barlow Condensed',sans-serif;font-weight:700;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
   </div>
 </header>
 
@@ -432,7 +434,122 @@ textarea.m-fi{resize:vertical;min-height:72px}
 
 <script>
 // ═══════════════════════════════════════
-// DATA
+// SUPABASE
+// ═══════════════════════════════════════
+const SB_URL='https://ozdcldsljhcwszrcnibv.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im96ZGNsZHNsamhjd3N6cmNuaWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNDM0MTksImV4cCI6MjA5NDcxOTQxOX0.0nH3kEAsqhbhDsRSZuNuYFha72SlpHV9Q8DS6cZxrZU';
+
+function sbH(){const t=localStorage.getItem('gc_tok');return{'apikey':SB_KEY,'Authorization':'Bearer '+(t||SB_KEY),'Content-Type':'application/json','Prefer':'return=representation'};}
+async function sbGet(t,q=''){try{const r=await fetch(`${SB_URL}/rest/v1/${t}?${q}`,{headers:sbH()});if(!r.ok)return null;return r.json();}catch{return null;}}
+async function sbPost(t,b){try{const r=await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:sbH(),body:JSON.stringify(b)});if(!r.ok){console.warn(await r.text());return null;}return r.json();}catch{return null;}}
+async function sbSignUp(e,p,m){try{const r=await fetch(`${SB_URL}/auth/v1/signup`,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p,data:m})});return r.json();}catch(err){return{error_description:err.message};}}
+async function sbSignIn(e,p){try{const r=await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});const d=await r.json();if(d.access_token){localStorage.setItem('gc_tok',d.access_token);localStorage.setItem('gc_user',JSON.stringify(d.user));currentUser=d.user;}return d;}catch(err){return{error_description:err.message};}}
+async function sbSignOut(){localStorage.removeItem('gc_tok');localStorage.removeItem('gc_user');currentUser=null;}
+async function uploadPhoto(file,userId,listingId){
+  if(!file||!userId)return null;
+  const ext=file.name.split('.').pop();
+  const path=`${userId}/${listingId||Date.now()}.${ext}`;
+  try{
+    const r=await fetch(`${SB_URL}/storage/v1/object/cart-photos/${path}`,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(localStorage.getItem('gc_tok')||SB_KEY),'Content-Type':file.type,'x-upsert':'true'},body:file});
+    if(!r.ok){console.warn('Upload error',await r.text());return null;}
+    return`${SB_URL}/storage/v1/object/public/cart-photos/${path}`;
+  }catch(e){console.warn(e);return null;}
+}
+
+let currentUser=null;
+try{currentUser=JSON.parse(localStorage.getItem('gc_user'));}catch{}
+
+// ═══════════════════════════════════════
+// AUTH UI
+// ═══════════════════════════════════════
+function updateAuthUI(){
+  const si=document.getElementById('auth-btn');
+  const ul=document.getElementById('user-label');
+  if(currentUser){
+    if(si){si.textContent='Sign Out';si.onclick=async()=>{await sbSignOut();updateAuthUI();toast('Signed out.');switchTab('marketplace');};}
+    if(ul)ul.textContent=currentUser.email||'My Account';
+  }else{
+    if(si){si.textContent='Sign In';si.onclick=()=>openAuthModal();}
+    if(ul)ul.textContent='';
+  }
+}
+
+function openAuthModal(){
+  var h='<div class="m-hd"><div class="m-title">Sign In / Join</div><div class="m-close" onclick="closeModal()">✕</div></div>'
+    +'<div class="m-body">'
+    +'<div style="display:flex;gap:.4rem;margin-bottom:1.2rem">'
+    +'<button id="auth-tab-in" onclick="showAuthTab(\'in\')" style="flex:1;padding:8px;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;border:1px solid var(--lime);border-radius:var(--rad);cursor:pointer;background:var(--lime);color:var(--blk)">Sign In</button>'
+    +'<button id="auth-tab-up" onclick="showAuthTab(\'up\')" style="flex:1;padding:8px;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;border:1px solid var(--bd2);border-radius:var(--rad);cursor:pointer;background:var(--dk3);color:var(--txt2)">Join Free</button>'
+    +'</div>'
+    +'<div id="auth-form-in">'
+    +'<div class="m-fg"><label class="m-fl">Email</label><input class="m-fi" id="auth-email" type="email" placeholder="your@email.com"></div>'
+    +'<div class="m-fg"><label class="m-fl">Password</label><input class="m-fi" id="auth-pass" type="password" placeholder="Your password"></div>'
+    +'<button class="m-cta" onclick="doSignIn()">Sign In</button>'
+    +'</div>'
+    +'<div id="auth-form-up" style="display:none">'
+    +'<div class="m-fg"><label class="m-fl">Email</label><input class="m-fi" id="reg-email" type="email" placeholder="your@email.com"></div>'
+    +'<div class="m-fg"><label class="m-fl">Password</label><input class="m-fi" id="reg-pass" type="password" placeholder="Create a password"></div>'
+    +'<div class="m-fg"><label class="m-fl">Name</label><input class="m-fi" id="reg-name" type="text" placeholder="Your name or business"></div>'
+    +'<button class="m-cta" onclick="doSignUp()">Create Free Account</button>'
+    +'</div>'
+    +'</div>';
+  document.getElementById('mContent').innerHTML=h;
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function showAuthTab(t){
+  document.getElementById('auth-form-in').style.display=t==='in'?'':'none';
+  document.getElementById('auth-form-up').style.display=t==='up'?'':'none';
+  var inBtn=document.getElementById('auth-tab-in');
+  var upBtn=document.getElementById('auth-tab-up');
+  if(t==='in'){inBtn.style.background='var(--lime)';inBtn.style.color='var(--blk)';inBtn.style.borderColor='var(--lime)';upBtn.style.background='var(--dk3)';upBtn.style.color='var(--txt2)';upBtn.style.borderColor='var(--bd2)';}
+  else{upBtn.style.background='var(--lime)';upBtn.style.color='var(--blk)';upBtn.style.borderColor='var(--lime)';inBtn.style.background='var(--dk3)';inBtn.style.color='var(--txt2)';inBtn.style.borderColor='var(--bd2)';}
+}
+
+async function doSignIn(){
+  const email=document.getElementById('auth-email')?.value.trim();
+  const pass=document.getElementById('auth-pass')?.value;
+  if(!email||!pass){toast('Email and password required.');return;}
+  toast('Signing in...');
+  const d=await sbSignIn(email,pass);
+  if(d?.access_token){toast('Welcome back! ⛳');updateAuthUI();closeModal();}
+  else toast('Error: '+(d?.error_description||d?.msg||'Check credentials.'));
+}
+
+async function doSignUp(){
+  const email=document.getElementById('reg-email')?.value.trim();
+  const pass=document.getElementById('reg-pass')?.value;
+  const name=document.getElementById('reg-name')?.value.trim();
+  if(!email||!pass){toast('Email and password required.');return;}
+  toast('Creating account...');
+  const d=await sbSignUp(email,pass,{full_name:name});
+  if(d?.user||d?.id){toast('Account created! Check your email to confirm. ⛳');closeModal();}
+  else toast('Error: '+(d?.error_description||d?.msg||'Try again.'));
+}
+
+// ═══════════════════════════════════════
+// LIVE LISTINGS FROM SUPABASE
+// ═══════════════════════════════════════
+async function loadLiveListings(){
+  const data=await sbGet('cart_listings','status=eq.active&order=created_at.desc&limit=50');
+  if(data&&data.length){
+    // Merge live listings with static ones
+    data.forEach(function(l){
+      var mapped={
+        id:'live_'+l.id,type:l.listing_type||'buy',cat:l.seller_type||'private',
+        brand:l.brand,model:l.model,year:l.year,price:l.price,miles:l.miles,
+        color:l.color,seats:l.seats,motor:l.motor,battery:l.battery,
+        topSpeed:l.top_speed,range:l.range,img:l.image_url?'📸':'🛻',
+        imageUrl:l.image_url,loc:(l.city||'')+(l.state?', '+l.state:''),
+        seller:l.seller_name||'Private Seller',badge:l.seller_type==='dealer'?'Certified Dealer':'Private Party',
+        condition:l.condition,features:l.features||[],rentUnit:l.rent_unit,isLive:true
+      };
+      LISTINGS.unshift(mapped);
+    });
+    renderMain();
+  }
+}
+
 // ═══════════════════════════════════════
 var LISTINGS=[{"id":1,"type":"buy","cat":"dealer","brand":"Club Car","model":"Onward 4","year":2023,"price":14995,"miles":180,"color":"Midnight Black","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":45,"img":"🛻","loc":"Naples, FL","seller":"Sun Coast Golf Carts","badge":"Certified Dealer","condition":"New","features":["Lifted 4 inch","LED Lights","Custom Wheels","Rear Flip Seat"]},{"id":2,"type":"buy","cat":"dealer","brand":"Yamaha","model":"Drive2 PTV","year":2022,"price":8750,"miles":1200,"color":"Pearl White","seats":2,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Sarasota, FL","seller":"Gulf Coast Carts","badge":"Certified Dealer","condition":"Used","features":["Custom Top","USB Charging","Street Legal","DOT Tires"]},{"id":3,"type":"buy","cat":"private","brand":"EZ-GO","model":"RXV Elite","year":2021,"price":6500,"miles":3400,"color":"Forest Green","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Fort Myers, FL","seller":"James T.","badge":"Private Party","condition":"Used","features":["Upgraded Lights","New Tires","Sound System","Custom Wrap"]},{"id":4,"type":"buy","cat":"online","brand":"Club Car","model":"Tempo","year":2024,"price":11200,"miles":0,"color":"Sandstone Beige","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Online - Ships Nationwide","seller":"CartNation.com","badge":"Online Dealer","condition":"New","features":["Factory Warranty","Free Shipping","Assembled","5yr Warranty"]},{"id":5,"type":"buy","cat":"private","brand":"Yamaha","model":"G29 Drive","year":2019,"price":4200,"miles":6800,"color":"Red","seats":2,"motor":"Gas","battery":"N/A","topSpeed":20,"range":null,"img":"🛻","loc":"Tampa, FL","seller":"Maria G.","badge":"Private Party","condition":"Good","features":["New Belts","Fresh Tune Up","Custom Seat","Rear Basket"]},{"id":6,"type":"buy","cat":"dealer","brand":"Polaris","model":"GEM e4","year":2023,"price":13800,"miles":220,"color":"Electric Blue","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":25,"range":30,"img":"🛻","loc":"Orlando, FL","seller":"Premier Cart World","badge":"Certified Dealer","condition":"New","features":["Street Legal","DOT Certified","Rear Camera","Bluetooth Audio"]},{"id":7,"type":"buy","cat":"online","brand":"ICON","model":"i60L","year":2024,"price":9999,"miles":0,"color":"Matte Black","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":25,"range":50,"img":"🛻","loc":"Online - Ships Nationwide","seller":"IconEvCart.com","badge":"Online Dealer","condition":"New","features":["Lifted 6 inch","Digital Dash","USB Ports","LED Pkg"]},{"id":8,"type":"sell","cat":"private","brand":"EZ-GO","model":"Express L6","year":2020,"price":9500,"miles":2200,"color":"Custom Camo","seats":6,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":38,"img":"🛻","loc":"Bonita Springs, FL","seller":"Derek M.","badge":"Private Party","condition":"Excellent","features":["6 Passenger","Lifted 6 inch","Hunting Build","Brush Guard"]},{"id":9,"type":"sell","cat":"dealer","brand":"Club Car","model":"Onward 2","year":2021,"price":7200,"miles":980,"color":"White","seats":2,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Clearwater, FL","seller":"Bay Area Golf Carts","badge":"Certified Dealer","condition":"Used","features":["Recent Service","New Tires","Clean Title","Trades Welcome"]},{"id":10,"type":"trade","cat":"private","brand":"Club Car","model":"DS 4 Passenger","year":2018,"price":5200,"miles":4100,"color":"White","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":28,"img":"🛻","loc":"Clearwater, FL","seller":"Tony V.","badge":"Trade Offer","condition":"Good","features":["Trade for Lithium","Clean Title","Runs Great","New Batteries 2023"]},{"id":11,"type":"trade","cat":"private","brand":"Yamaha","model":"Drive2","year":2020,"price":6800,"miles":3100,"color":"Blue","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Bradenton, FL","seller":"Rick S.","badge":"Trade Offer","condition":"Excellent","features":["Trade for 6-Seat","Custom Wrap","Sound System","LED Lights"]},{"id":12,"type":"rent","cat":"dealer","brand":"Club Car","model":"Onward HP","year":2023,"price":89,"miles":null,"color":"White","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Marco Island, FL","seller":"Island Cart Rentals","badge":"Rental Fleet","condition":"New","features":["Daily Rate","GPS Included","Delivery Available","Charger Included"],"rentUnit":"day"},{"id":13,"type":"rent","cat":"dealer","brand":"Yamaha","model":"Drive2","year":2022,"price":450,"miles":null,"color":"White","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Clearwater Beach, FL","seller":"Beach Wheels LLC","badge":"Rental Fleet","condition":"Good","features":["Weekly Rate","Street Legal","Beach Delivery","Charger Included"],"rentUnit":"week"},{"id":14,"type":"rent","cat":"online","brand":"Bintelli","model":"Beyond 4PR","year":2023,"price":299,"miles":null,"color":"Various","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":25,"range":45,"img":"🛻","loc":"Ships to Your Door","seller":"RentMyCart.com","badge":"Online Dealer","condition":"New","features":["Weekend Rate","Nationwide","Free Delivery","Insurance Included"],"rentUnit":"weekend"}];
 var PARTS=[{"id":1,"name":"48V 105Ah Lithium Battery Pack","brand":"Allied Lithium","fits":["Club Car","EZ-GO","Yamaha"],"price":2199,"seller":"CartBatteryPros.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.8,"reviews":234,"compat":"Universal 48V Systems"},{"id":2,"name":"6 Inch Lift Kit - Heavy Duty A-Arm","brand":"MadJax","fits":["Club Car DS","Club Car Precedent"],"price":389,"seller":"LiftMyCart.com","cat":"Suspension","loc":"Ships Nationwide","img":"🔧","rating":4.7,"reviews":189,"compat":"Club Car DS/Precedent 2000+"},{"id":3,"name":"Fold-Down Windshield - Tinted","brand":"National Cart","fits":["EZ-GO","Yamaha"],"price":145,"seller":"CartPartsWarehouse","cat":"Body","loc":"Local + Ships","img":"🪟","rating":4.5,"reviews":98,"compat":"EZ-GO TXT/RXV, Yamaha G29"},{"id":4,"name":"High-Speed Motor Controller 400A","brand":"Alltrax","fits":["Club Car","EZ-GO","Yamaha"],"price":549,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"⚡","rating":4.9,"reviews":412,"compat":"48V DC Systems"},{"id":5,"name":"10 Inch Aluminum Wheel Set (4)","brand":"Cali Off-Road","fits":["Universal 4 Lug"],"price":289,"seller":"CartWheelz.com","cat":"Wheels","loc":"Ships Nationwide","img":"⭕","rating":4.6,"reviews":167,"compat":"Universal 4-Lug Pattern"},{"id":6,"name":"23x10.5x12 All-Terrain Tires (4)","brand":"Kenda","fits":["Universal"],"price":349,"seller":"TirePros Cart Division","cat":"Tires","loc":"Local + Ships","img":"🔘","rating":4.7,"reviews":203,"compat":"10 and 12 Inch Rims"},{"id":7,"name":"Rear Flip Seat Kit - 2 Passenger","brand":"Madjax","fits":["Club Car DS","EZ-GO TXT"],"price":199,"seller":"CartSeats Direct","cat":"Seating","loc":"Ships Nationwide","img":"💺","rating":4.4,"reviews":88,"compat":"Club Car DS, EZ-GO TXT"},{"id":8,"name":"48V 30A DC-DC Converter","brand":"Navitas","fits":["Universal 48V"],"price":89,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"⚡","rating":4.8,"reviews":156,"compat":"Universal 48V Carts"},{"id":9,"name":"LED Light Bar Kit 30 Inch","brand":"Rigid Industries","fits":["Universal"],"price":229,"seller":"CartAccessories.com","cat":"Lighting","loc":"Ships Nationwide","img":"💡","rating":4.9,"reviews":321,"compat":"Universal Mount"},{"id":10,"name":"Bluetooth 4-Speaker Sound System","brand":"Rockville","fits":["Universal"],"price":319,"seller":"CartAudio Direct","cat":"Audio","loc":"Ships Nationwide","img":"🔊","rating":4.6,"reviews":278,"compat":"Universal 12V/48V"},{"id":11,"name":"48V 15A Smart Battery Charger","brand":"Lester Summit","fits":["Universal 48V"],"price":175,"seller":"CartBatteryPros.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.7,"reviews":142,"compat":"Universal 48V Lead Acid"},{"id":12,"name":"Universal Cargo Rack - Rear","brand":"RHOX","fits":["Club Car","EZ-GO","Yamaha"],"price":115,"seller":"CartGear.com","cat":"Accessories","loc":"Ships Nationwide","img":"📦","rating":4.5,"reviews":67,"compat":"Universal Bolt-On"},{"id":13,"name":"Lithium Drop-In Replacement 48V 60Ah","brand":"Dakota Lithium","fits":["EZ-GO","Yamaha","Club Car"],"price":1499,"seller":"GreenCartPower.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.7,"reviews":98,"compat":"Universal 48V Drop-In"},{"id":14,"name":"Golf Cart Roof - 80 Inch Double Roof","brand":"RHOX","fits":["Club Car","EZ-GO","Yamaha"],"price":259,"seller":"CartRoofs.com","cat":"Body","loc":"Ships Nationwide","img":"🏠","rating":4.5,"reviews":76,"compat":"Universal Post Mount"},{"id":15,"name":"Electric Fan Kit - Cooling System","brand":"D&D Motor Systems","fits":["Club Car","EZ-GO"],"price":79,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"🌀","rating":4.6,"reviews":112,"compat":"DC Motor Cooling, Universal"}];
@@ -1076,31 +1193,32 @@ function renderSell(){
     +'<div class="sform-title">List Your Golf Cart</div>'
     +'<p class="sform-sub">Reach thousands of buyers, traders, and renters across Florida and nationwide. Free listings for private parties. Premium placement available for dealers.</p>'
     +'<div class="fcard"><div class="fcard-title">Listing Type</div>'
-    +'<div class="stabs" style="margin-bottom:0">'
-    +'<div class="stab on-sell" onclick="toast(\'Sell mode\')">💵 Sell</div>'
-    +'<div class="stab" onclick="toast(\'Trade mode\')">⇌ Trade</div>'
-    +'<div class="stab" onclick="toast(\'Rent mode\')">🚗 Rent / Rent to Own</div>'
-    +'</div></div>'
+    +'<div class="stabs" style="margin-bottom:.8rem">'
+    +'<div class="stab on-sell" onclick="setListingType(\'sell\',this)">💵 Sell</div>'
+    +'<div class="stab" onclick="setListingType(\'trade\',this)">⇌ Trade</div>'
+    +'<div class="stab" onclick="setListingType(\'rent\',this)">🚗 Rent / Rent to Own</div>'
+    +'</div>'
+    +'<input type="hidden" class="sell-listing-type" value="sell">'
+    +'</div>'
     +'<div class="fcard"><div class="fcard-title">Cart Details</div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Brand *</label><select class="fip"><option value="">Select</option><option>Club Car</option><option>EZ-GO</option><option>Yamaha</option><option>Polaris</option><option>ICON</option><option>Bintelli</option><option>Other</option></select></div>'
-    +'<div class="fg"><label class="fl">Model *</label><input class="fip" type="text" placeholder="e.g. Onward 4, RXV Elite"></div></div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Year *</label><input class="fip" type="number" placeholder="e.g. 2022" min="1990" max="2025"></div>'
-    +'<div class="fg"><label class="fl">Asking Price *</label><input class="fip" type="number" placeholder="$0.00"></div></div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Motor Type</label><select class="fip"><option>Electric</option><option>Gas</option><option>Hybrid</option></select></div>'
-    +'<div class="fg"><label class="fl">Battery</label><select class="fip"><option>Lithium</option><option>Lead Acid</option><option>N/A</option></select></div></div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Condition *</label><select class="fip"><option>New</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Parts Only</option></select></div>'
-    +'<div class="fg"><label class="fl">Seats</label><select class="fip"><option>2</option><option>4</option><option>6</option></select></div></div>'
-    +'<div class="fg"><label class="fl">Miles / Hours</label><input class="fip" type="number" placeholder="Current odometer or hours"></div>'
-    +'<div class="fg"><label class="fl">Color</label><input class="fip" type="text" placeholder="e.g. Midnight Black, Pearl White, Custom..."></div>'
-    +'<div class="fg"><label class="fl">Features / Mods (one per line)</label><textarea class="fip" placeholder="Lifted 4 inch&#10;LED Light Bar&#10;Custom Wheels&#10;Sound System"></textarea></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Brand *</label><select class="fip sell-brand"><option value="">Select</option><option>Club Car</option><option>EZ-GO</option><option>Yamaha</option><option>Polaris</option><option>ICON</option><option>Bintelli</option><option>Other</option></select></div>'
+    +'<div class="fg"><label class="fl">Model *</label><input class="fip sell-model" type="text" placeholder="e.g. Onward 4, RXV Elite"></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Year *</label><input class="fip sell-year" type="number" placeholder="e.g. 2022" min="1990" max="2025"></div>'
+    +'<div class="fg"><label class="fl">Asking Price *</label><input class="fip sell-price" type="number" placeholder="$0.00"></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Motor Type</label><select class="fip sell-motor"><option>Electric</option><option>Gas</option><option>Hybrid</option></select></div>'
+    +'<div class="fg"><label class="fl">Battery</label><select class="fip sell-battery"><option>Lithium</option><option>Lead Acid</option><option>N/A</option></select></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Condition *</label><select class="fip sell-condition"><option>New</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Parts Only</option></select></div>'
+    +'<div class="fg"><label class="fl">Seats</label><select class="fip sell-seats"><option>2</option><option>4</option><option>6</option></select></div></div>'
+    +'<div class="fg"><label class="fl">Miles / Hours</label><input class="fip sell-miles" type="number" placeholder="Current odometer or hours"></div>'
+    +'<div class="fg"><label class="fl">Color</label><input class="fip sell-color" type="text" placeholder="e.g. Midnight Black, Pearl White, Custom..."></div>'
+    +'<div class="fg"><label class="fl">Features / Mods (one per line)</label><textarea class="fip sell-features" placeholder="Lifted 4 inch&#10;LED Light Bar&#10;Custom Wheels&#10;Sound System"></textarea></div>'
     +'</div>'
     +'<div class="fcard"><div class="fcard-title">Location and Contact</div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">City *</label><input class="fip" type="text" placeholder="City"></div>'
-    +'<div class="fg"><label class="fl">State *</label><select class="fip"><option>FL</option><option>GA</option><option>TX</option><option>CA</option><option>NC</option><option>SC</option><option>Other</option></select></div></div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Your Name *</label><input class="fip" type="text" placeholder="First name or business name"></div>'
-    +'<div class="fg"><label class="fl">Seller Type</label><select class="fip"><option>Private Party</option><option>Dealer</option><option>Online Dealer</option></select></div></div>'
-    +'<div class="frow2"><div class="fg"><label class="fl">Email *</label><input class="fip" type="email" placeholder="your@email.com"></div>'
-    +'<div class="fg"><label class="fl">Phone</label><input class="fip" type="tel" placeholder="(___) ___-____"></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">City *</label><input class="fip sell-city" type="text" placeholder="City"></div>'
+    +'<div class="fg"><label class="fl">State *</label><select class="fip sell-state"><option>FL</option><option>GA</option><option>TX</option><option>CA</option><option>NC</option><option>SC</option><option>Other</option></select></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Your Name *</label><input class="fip sell-name" type="text" placeholder="First name or business name"></div>'
+    +'<div class="fg"><label class="fl">Seller Type</label><select class="fip sell-seller-type"><option value="private">Private Party</option><option value="dealer">Dealer</option><option value="online">Online Dealer</option></select></div></div>'
+    +'<div class="fg"><label class="fl">Phone</label><input class="fip sell-phone" type="tel" placeholder="(___) ___-____"></div>'
     +'</div>'
     +'<div class="fcard"><div class="fcard-title">Photos</div>'
     +'<input type="file" id="cart-photo-input" accept="image/*" multiple style="display:none" onchange="handleCartPhotos(this)">'
@@ -1234,15 +1352,56 @@ function closeModal(){document.getElementById('mOverlay').classList.remove('open
 function closeModalOverlay(e){if(e.target===document.getElementById('mOverlay'))closeModal();}
 function favIt(el){el.textContent=el.textContent==='♡'?'♥':'♡';if(el.textContent==='♥'){el.style.color='var(--pnk)';toast('Added to favorites ♥');}else{el.style.color='';}}
 
-function submitListing() {
-  var photoCount = uploadedPhotos.length;
-  if (photoCount === 0) {
-    toast('Add at least one photo before submitting!');
-    return;
+async function submitListing() {
+  if(!currentUser){toast('Please sign in to list your cart!');openAuthModal();return;}
+  if(uploadedPhotos.length===0){toast('Add at least one photo!');return;}
+
+  toast('Submitting listing...');
+
+  // Upload photos first
+  var photoUrls=[];
+  for(var i=0;i<uploadedPhotos.length;i++){
+    var p=uploadedPhotos[i];
+    if(p.file){
+      var url=await uploadPhoto(p.file,currentUser.id,Date.now()+'_'+i);
+      if(url)photoUrls.push(url);
+    } else if(p.dataUrl){
+      photoUrls.push(p.dataUrl); // fallback for preview
+    }
   }
-  toast('Listing submitted with ' + photoCount + ' photo(s)! You will receive a confirmation email. ✓');
-  uploadedPhotos = [];
-  setTimeout(function(){ switchTab('marketplace'); }, 2000);
+
+  // Build listing object
+  var listing={
+    user_id:currentUser.id,
+    seller_name:document.querySelector('.sell-name')?.value||currentUser.email,
+    seller_type:document.querySelector('.sell-seller-type')?.value||'private',
+    listing_type:document.querySelector('.sell-listing-type')?.value||'sell',
+    brand:document.querySelector('.sell-brand')?.value||'',
+    model:document.querySelector('.sell-model')?.value||'',
+    year:parseInt(document.querySelector('.sell-year')?.value)||null,
+    price:parseFloat(document.querySelector('.sell-price')?.value)||null,
+    motor:document.querySelector('.sell-motor')?.value||'Electric',
+    battery:document.querySelector('.sell-battery')?.value||'Lithium',
+    condition:document.querySelector('.sell-condition')?.value||'Good',
+    seats:parseInt(document.querySelector('.sell-seats')?.value)||4,
+    miles:parseInt(document.querySelector('.sell-miles')?.value)||null,
+    color:document.querySelector('.sell-color')?.value||'',
+    features:(document.querySelector('.sell-features')?.value||'').split('\n').filter(Boolean),
+    city:document.querySelector('.sell-city')?.value||'',
+    state:document.querySelector('.sell-state')?.value||'FL',
+    image_url:photoUrls[0]||null,
+    all_images:photoUrls,
+    status:'active'
+  };
+
+  var result=await sbPost('cart_listings',listing);
+  if(result&&result[0]){
+    toast('🎉 Listing published with '+photoUrls.length+' photo(s)!');
+    uploadedPhotos=[];
+    setTimeout(function(){switchTab('marketplace');loadLiveListings();},1500);
+  } else {
+    toast('Error saving listing. Make sure you\'re signed in.');
+  }
 }
 
 // ═══════════════════════════════════════
@@ -1268,7 +1427,7 @@ function handleCartPhotos(input) {
   files.forEach(function(file) {
     var reader = new FileReader();
     reader.onload = function(e) {
-      uploadedPhotos.push({ name: file.name, dataUrl: e.target.result });
+      uploadedPhotos.push({ name: file.name, dataUrl: e.target.result, file: file });
       renderPhotoPreview();
     };
     reader.readAsDataURL(file);
@@ -1314,8 +1473,16 @@ function removePhoto(i) {
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
+function setListingType(type, el){
+  document.querySelectorAll('.sell-listing-type').forEach(function(i){i.value=type;});
+  document.querySelectorAll('.stab').forEach(function(t){t.className='stab';});
+  if(el)el.classList.add('on-'+type);
+}
+
 document.addEventListener('DOMContentLoaded',function(){
   switchTab('marketplace');
+  updateAuthUI();
+  loadLiveListings();
 });
 </script>
 </body>
