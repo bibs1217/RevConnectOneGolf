@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevConnect | Golf Cart Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blk:#080909;--dk:#111315;--dk2:#181b1e;--dk3:#1e2126;--dk4:#252a30;--dk5:#2d333b;
+  --bd:#2a2e36;--bd2:#363d47;--bd3:#424a56;
+  --lime:#b8f241;--lime2:#ccf567;--lime3:#e2faaa;--limedim:rgba(184,242,65,.1);--limedim2:rgba(184,242,65,.05);
+  --org:#ff6b1a;--org2:#ff8b45;--orgdim:rgba(255,107,26,.1);
+  --blu:#3b9eff;--blu2:#6ab8ff;--bludim:rgba(59,158,255,.1);
+  --pnk:#ff3d8a;--pnkdim:rgba(255,61,138,.1);
+  --pur:#9b59f5;--pur2:#b87dff;--purdim:rgba(155,89,245,.1);
+  --ok:#22c55e;--okdim:rgba(34,197,94,.1);
+  --txt:#eef0f3;--txt2:#a4aab5;--txt3:#636979;--txt4:#3a3f4a;
+  --rad:5px;--rad2:9px;--rad3:14px;--rad4:20px;
+  --sh:0 2px 10px rgba(0,0,0,.5);--sh2:0 6px 28px rgba(0,0,0,.7);
+}
+html{font-family:'Barlow',sans-serif;background:var(--blk);color:var(--txt);font-size:15px;line-height:1.5;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--dk)}
+::-webkit-scrollbar-thumb{background:var(--dk5);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--lime)}
+a{color:var(--lime);text-decoration:none}
+
+/* HEADER */
+.hd{background:linear-gradient(90deg,var(--blk),var(--dk2));border-bottom:2px solid var(--lime);position:sticky;top:0;z-index:400;height:58px;display:flex;align-items:center;padding:0 1.4rem}
+.hd-in{width:100%;max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:1.2rem}
+.logo{display:flex;align-items:center;gap:9px;flex-shrink:0;cursor:pointer}
+.logo-badge{background:var(--lime);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;line-height:1;color:var(--txt)}
+.logo-text em{color:var(--lime);font-style:normal}
+.logo-tag{font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.hd-srch{flex:1;max-width:400px;position:relative}
+.hd-srch input{width:100%;background:var(--dk3);border:1px solid var(--bd);border-radius:30px;padding:7px 14px 7px 38px;font-size:12px;color:var(--txt);font-family:'Barlow',sans-serif;transition:border-color .15s}
+.hd-srch input:focus{outline:none;border-color:var(--lime);background:var(--dk2)}
+.hd-srch input::placeholder{color:var(--txt3)}
+.hd-srch-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--txt3)}
+.hd-tabs{display:flex;gap:2px;margin-left:auto}
+.hd-tab{padding:5px 13px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:none;background:none;color:var(--txt3);transition:all .15s}
+.hd-tab:hover{color:var(--txt)}
+.hd-tab.on{background:var(--limedim);color:var(--lime)}
+.hd-cta{background:var(--lime);color:var(--blk);border:none;border-radius:20px;padding:7px 18px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .18s;flex-shrink:0}
+.hd-cta:hover{background:var(--lime2);transform:translateY(-1px)}
+
+/* TAB BAR */
+.tabbar{background:var(--dk);border-bottom:1px solid var(--bd);position:sticky;top:58px;z-index:300;overflow-x:auto;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbar-in{max-width:1440px;margin:0 auto;padding:0 1.4rem;display:flex;gap:0}
+.tb{display:flex;align-items:center;gap:6px;padding:0 1rem;height:48px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .18s;flex-shrink:0}
+.tb:hover{color:var(--txt)}
+.tb.on{color:var(--lime);border-color:var(--lime)}
+.tb-ico{font-size:14px}
+.tb-ct{background:var(--dk4);color:var(--txt3);border-radius:10px;padding:1px 7px;font-size:10px;font-family:'Barlow',sans-serif;font-weight:600;letter-spacing:0}
+.tb.on .tb-ct{background:var(--limedim);color:var(--lime)}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--blk) 0%,var(--dk2) 55%,#0c1505 100%);padding:2.5rem 1.4rem 2rem;border-bottom:1px solid var(--bd);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(184,242,65,.12) 0%,transparent 65%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-40px;left:15%;width:220px;height:220px;background:radial-gradient(circle,rgba(184,242,65,.07) 0%,transparent 65%);pointer-events:none}
+.hero-in{max-width:1440px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.hero-eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:var(--lime);margin-bottom:.4rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,7vw,80px);line-height:.95;color:var(--txt);margin-bottom:.6rem;letter-spacing:1px}
+.hero-title em{color:var(--lime);font-style:normal}
+.hero-sub{font-size:14px;color:var(--txt2);max-width:500px;margin-bottom:1.5rem;line-height:1.65}
+.hero-stats{display:flex;gap:1.8rem;flex-wrap:wrap}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--lime);line-height:1}
+.stat-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+.hero-btns{display:flex;gap:.7rem;flex-wrap:wrap}
+.hero-btn{padding:10px 22px;border-radius:var(--rad4);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.5px;cursor:pointer;border:none;transition:all .18s}
+.hero-btn-p{background:var(--lime);color:var(--blk)}
+.hero-btn-p:hover{background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 18px rgba(184,242,65,.3)}
+.hero-btn-s{background:transparent;color:var(--txt2);border:1px solid var(--bd2)}
+.hero-btn-s:hover{border-color:var(--lime);color:var(--lime)}
+
+/* LAYOUT */
+.layout{max-width:1440px;margin:0 auto;padding:1.4rem;display:grid;grid-template-columns:264px 1fr;gap:1.4rem;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* SIDEBAR */
+.sidebar{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);padding:1.1rem;position:sticky;top:110px}
+.sb-head{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.5px;color:var(--txt);margin-bottom:.9rem;display:flex;align-items:center;justify-content:space-between}
+.sb-clr{font-size:11px;font-family:'Barlow',sans-serif;font-weight:500;color:var(--lime);cursor:pointer;letter-spacing:0}
+.sb-clr:hover{color:var(--lime2)}
+.fsec{margin-bottom:1rem}
+.flbl{font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:var(--txt3);font-weight:700;margin-bottom:.4rem;font-family:'Barlow Condensed',sans-serif}
+.fi{width:100%;background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad);padding:7px 10px;font-size:12px;color:var(--txt);font-family:'Barlow',sans-serif;transition:border-color .15s}
+.fi:focus{outline:none;border-color:var(--lime)}
+.fi::placeholder{color:var(--txt4)}
+select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23636979' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.4rem}
+.chips{display:flex;flex-wrap:wrap;gap:.3rem}
+.chip{padding:3px 9px;border-radius:12px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;border:1px solid var(--bd);color:var(--txt3);background:var(--dk3);transition:all .15s;letter-spacing:.3px;text-transform:uppercase}
+.chip:hover{border-color:var(--lime);color:var(--lime)}
+.chip.on{background:var(--limedim);border-color:var(--lime);color:var(--lime)}
+.apply-btn{width:100%;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);padding:9px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;cursor:pointer;transition:all .18s;margin-top:.9rem}
+.apply-btn:hover{background:var(--lime2);transform:translateY(-1px)}
+
+/* RESULTS HEADER */
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem}
+.rcount{font-size:12px;color:var(--txt2)}
+.rcount strong{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--lime)}
+.sort-sel{background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad);padding:5px 26px 5px 10px;font-size:11px;color:var(--txt);font-family:'Barlow',sans-serif;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23636979' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.sort-sel:focus{outline:none}
+
+/* SUB-TABS */
+.stabs{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap}
+.stab{padding:5px 14px;border-radius:20px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:1px solid var(--bd);color:var(--txt3);background:var(--dk3);transition:all .15s}
+.stab:hover{border-color:var(--txt3);color:var(--txt)}
+.stab.on-buy{background:var(--limedim);border-color:var(--lime);color:var(--lime)}
+.stab.on-sell{background:var(--bludim);border-color:var(--blu);color:var(--blu)}
+.stab.on-trade{background:var(--pnkdim);border-color:var(--pnk);color:var(--pnk)}
+.stab.on-rent{background:var(--orgdim);border-color:var(--org);color:var(--org)}
+
+/* LISTING CARDS */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:1rem}
+.card{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);overflow:hidden;transition:all .22s;cursor:pointer;display:flex;flex-direction:column;animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{border-color:var(--lime);transform:translateY(-3px);box-shadow:0 8px 30px rgba(184,242,65,.14)}
+.card-img{height:130px;background:linear-gradient(135deg,var(--dk3),var(--dk4));display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;border-bottom:1px solid var(--bd)}
+.card-badge{position:absolute;top:8px;left:8px;border-radius:20px;padding:2px 9px;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.3px;background:var(--blk);border:1px solid}
+.bdg-dealer{border-color:var(--lime);color:var(--lime)}
+.bdg-private{border-color:var(--blu);color:var(--blu)}
+.bdg-online{border-color:var(--pur);color:var(--pur2)}
+.bdg-rental{border-color:var(--org);color:var(--org)}
+.bdg-trade{border-color:var(--pnk);color:var(--pnk)}
+.card-fav{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);border:1px solid var(--bd);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .15s}
+.card-fav:hover{border-color:var(--pnk);color:var(--pnk)}
+.card-body{padding:.9rem;flex:1;display:flex;flex-direction:column}
+.card-yb{font-size:10px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.card-model{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:.4rem;line-height:1.2}
+.card-price{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);margin-bottom:.5rem;line-height:1}
+.card-price.p-sell{color:var(--blu)}
+.card-price.p-trade{color:var(--pnk)}
+.card-price.p-rent{color:var(--org)}
+.card-price .pu{font-size:13px;font-family:'Barlow',sans-serif;font-weight:400;color:var(--txt3)}
+.specs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
+.sp{background:var(--dk3);border:1px solid var(--bd);border-radius:3px;padding:1px 7px;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px}
+.feats{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
+.ft{font-size:9px;color:var(--lime);border:1px solid rgba(184,242,65,.2);border-radius:3px;padding:1px 5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.2px}
+.card-seller{font-size:10px;color:var(--txt2);font-weight:500;margin-top:auto}
+.card-loc{font-size:10px;color:var(--txt3);margin-top:2px}
+.card-acts{display:flex;gap:.4rem;padding:.7rem .9rem;border-top:1px solid var(--bd);background:var(--dk3)}
+.cbtn{flex:1;border:none;border-radius:var(--rad);padding:6px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s}
+.cbtn-p{background:var(--lime);color:var(--blk)}
+.cbtn-p:hover{background:var(--lime2)}
+.cbtn-g{background:var(--dk4);color:var(--txt2);border:1px solid var(--bd)}
+.cbtn-g:hover{border-color:var(--txt2);color:var(--txt)}
+
+/* SEARCH BOX */
+.search-panel{background:var(--dk2);border:1px solid var(--bd2);border-top:3px solid var(--lime);border-radius:var(--rad3);padding:1.4rem;margin-bottom:1.4rem}
+.search-panel.orange{border-top-color:var(--org)}
+.search-panel.blue{border-top-color:var(--blu)}
+.search-panel.purple{border-top-color:var(--pur)}
+.sp-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime);font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:.9rem}
+.sp-label.orange{color:var(--org)}
+.sp-label.blue{color:var(--blu)}
+.sp-label.purple{color:var(--pur)}
+.sp-row{display:flex;gap:.6rem;align-items:stretch;flex-wrap:wrap}
+.sp-inp{flex:1;min-width:200px;background:var(--dk3);border:1px solid var(--bd2);border-radius:var(--rad);padding:9px 13px;font-size:13px;color:var(--txt);font-family:'Barlow',sans-serif;outline:none;transition:border-color .15s}
+.sp-inp:focus{border-color:var(--lime)}
+.sp-inp::placeholder{color:var(--txt3)}
+.sp-sel{background:var(--dk3);border:1px solid var(--bd2);border-radius:var(--rad);padding:9px 26px 9px 10px;font-size:12px;color:var(--txt);font-family:'Barlow',sans-serif;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23636979' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
+.sp-btn{padding:9px 22px;border:none;border-radius:var(--rad);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;background:var(--lime);color:var(--blk);white-space:nowrap;transition:all .18s}
+.sp-btn:hover{background:var(--lime2);transform:translateY(-1px)}
+.sp-btn.orange{background:var(--org);color:#fff}
+.sp-btn.orange:hover{background:var(--org2)}
+.sp-btn.blue{background:var(--blu);color:#fff}
+.sp-btn.blue:hover{background:var(--blu2)}
+.sp-btn.purple{background:var(--pur);color:#fff}
+.sp-btn.purple:hover{background:var(--pur2)}
+.sp-hint{font-size:10px;color:var(--txt3);margin-top:.6rem}
+
+/* LIVE RESULTS GRID */
+.live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.7rem;margin-top:1rem}
+.live-card{background:var(--dk3);border:1px solid var(--bd);border-left:3px solid var(--lime);padding:.9rem;display:flex;align-items:center;gap:.8rem;cursor:pointer;transition:all .18s;text-decoration:none;border-radius:var(--rad2)}
+.live-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4);border-color:var(--lime)}
+.live-card.orange{border-left-color:var(--org)}
+.live-card.orange:hover{border-color:var(--org)}
+.live-card.blue{border-left-color:var(--blu)}
+.live-card.blue:hover{border-color:var(--blu)}
+.live-card.purple{border-left-color:var(--pur)}
+.live-card.purple:hover{border-color:var(--pur)}
+.lc-ico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--dk4)}
+.lc-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.lc-desc{font-size:10px;color:var(--txt3);line-height:1.3}
+.lc-arrow{font-size:16px;margin-left:auto;flex-shrink:0}
+
+/* SHOP RESULT CARDS */
+.shop-result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem}
+.shop-result-card{background:var(--dk2);border:1px solid var(--bd);border-left:4px solid var(--org);border-radius:var(--rad2);padding:1rem}
+.src-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.src-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--txt);flex:1;margin-right:.5rem}
+.src-dist{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--org);white-space:nowrap}
+.src-addr{font-size:11px;color:var(--txt3);margin-bottom:.4rem}
+.src-phone{font-size:12px;font-weight:700;margin-bottom:.5rem}
+.src-phone a{color:var(--lime)}
+.src-meta{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem;flex-wrap:wrap}
+.src-rating{font-size:11px;color:var(--txt2)}
+.src-open-yes{font-size:10px;font-weight:700;color:var(--ok)}
+.src-open-no{font-size:10px;font-weight:700;color:var(--pnk)}
+.src-acts{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.src-btn{padding:7px;border:none;border-radius:var(--rad);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
+.src-btn-p{background:var(--blu);color:#fff}
+.src-btn-s{background:var(--org);color:#fff}
+
+/* EVENT CARDS */
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem}
+.ecard{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);overflow:hidden;transition:all .22s;cursor:pointer;animation:pop .22s ease}
+.ecard:hover{border-color:var(--blu);transform:translateY(-2px);box-shadow:0 6px 22px rgba(59,158,255,.12)}
+.ecard.feat{border-color:rgba(59,158,255,.3)}
+.ecard-hd{padding:1rem;border-bottom:1px solid var(--bd);display:flex;gap:.8rem;align-items:flex-start}
+.eDateBox{background:var(--dk3);border:1px solid var(--bd2);border-radius:var(--rad2);padding:.45rem .65rem;text-align:center;flex-shrink:0;min-width:48px}
+.eMo{font-size:8px;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.eDy{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--blu);line-height:1}
+.eType{display:inline-block;border-radius:3px;padding:2px 7px;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.et-Show{background:var(--limedim);color:var(--lime)}
+.et-Meet{background:var(--bludim);color:var(--blu)}
+.et-Expo{background:var(--purdim);color:var(--pur2)}
+.et-Cruise{background:var(--orgdim);color:var(--org)}
+.et-Charity{background:rgba(239,68,68,.1);color:#ff8080}
+.eName{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--txt);line-height:1.2;margin-bottom:2px}
+.eVenue{font-size:11px;color:var(--txt3)}
+.ecard-bd{padding:.9rem;border-bottom:1px solid var(--bd)}
+.eDesc{font-size:11px;color:var(--txt2);line-height:1.6;margin-bottom:.7rem}
+.eMeta{display:flex;gap:.9rem;flex-wrap:wrap}
+.emi{font-size:10px;color:var(--txt3)}
+.emi strong{color:var(--txt2)}
+.ecard-ft{display:flex;gap:.4rem;padding:.7rem .9rem;background:var(--dk3)}
+.ebtn{flex:1;border:none;border-radius:var(--rad);padding:7px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s}
+.ebtn-p{background:var(--blu);color:#fff}
+.ebtn-p:hover{background:var(--blu2)}
+.ebtn-g{background:var(--dk4);color:var(--txt2);border:1px solid var(--bd)}
+.ebtn-g:hover{border-color:var(--txt);color:var(--txt)}
+
+/* SELL FORM */
+.sform-wrap{max-width:660px}
+.sform-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.5px;color:var(--txt);margin-bottom:.3rem}
+.sform-sub{font-size:13px;color:var(--txt2);margin-bottom:1.5rem;line-height:1.65}
+.fcard{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);padding:1.4rem;margin-bottom:1rem}
+.fcard-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:.9rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)}
+.fg{margin-bottom:.85rem}
+.fl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--txt3);font-weight:700;margin-bottom:4px;font-family:'Barlow Condensed',sans-serif}
+.fip{width:100%;background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad);padding:8px 11px;font-size:13px;color:var(--txt);font-family:'Barlow',sans-serif;transition:border-color .15s}
+.fip:focus{outline:none;border-color:var(--lime)}
+.fip::placeholder{color:var(--txt4)}
+select.fip{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%23636979' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+textarea.fip{resize:vertical;min-height:86px;line-height:1.6}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:500px){.frow2{grid-template-columns:1fr}}
+.upload-z{border:2px dashed var(--bd2);border-radius:var(--rad2);padding:2rem;text-align:center;cursor:pointer;transition:all .2s}
+.upload-z:hover{border-color:var(--lime);background:var(--limedim2)}
+.upload-ico{font-size:28px;margin-bottom:.5rem}
+.upload-txt{font-size:13px;color:var(--txt2);margin-bottom:.2rem}
+.upload-hint{font-size:11px;color:var(--txt3)}
+.submit-btn{width:100%;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);padding:13px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.5px;cursor:pointer;transition:all .18s;margin-top:.5rem}
+.submit-btn:hover{background:var(--lime2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(184,242,65,.3)}
+
+/* EMPTY */
+.empty{text-align:center;padding:3.5rem 1rem}
+.empty-ico{font-size:44px;opacity:.3;margin-bottom:.8rem}
+.empty-t{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--txt3);margin-bottom:.3rem}
+.empty-s{font-size:12px;color:var(--txt3)}
+
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:900;display:flex;align-items:center;justify-content:center;padding:1.4rem;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(4px)}
+.moverlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--dk2);border:1px solid var(--bd2);border-radius:var(--rad3);max-width:560px;width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.m-hd{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.3rem;border-bottom:1px solid var(--bd)}
+.m-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--txt);letter-spacing:.5px}
+.m-close{background:var(--dk4);border:1px solid var(--bd);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt2);font-size:14px;transition:all .15s;flex-shrink:0}
+.m-close:hover{border-color:var(--txt);color:var(--txt)}
+.m-body{padding:1.3rem}
+.m-img{height:148px;background:linear-gradient(135deg,var(--dk3),var(--dk4));border-radius:var(--rad2);display:flex;align-items:center;justify-content:center;font-size:64px;margin-bottom:1.1rem;border:1px solid var(--bd)}
+.m-price{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--lime);margin-bottom:.7rem}
+.m-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.1rem}
+.m-spec{background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad);padding:.55rem .8rem}
+.m-slbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;margin-bottom:2px}
+.m-sval{font-size:13px;font-weight:600;color:var(--txt)}
+.m-stitle{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:.4rem;margin-top:.9rem}
+.m-feats{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.9rem}
+.m-ft{background:var(--limedim);border:1px solid rgba(184,242,65,.18);border-radius:3px;padding:2px 8px;font-size:10px;color:var(--lime);font-family:'Barlow Condensed',sans-serif;font-weight:700}
+.m-contact{background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad2);padding:1rem;margin-bottom:.9rem}
+.m-fg{margin-bottom:.7rem}
+.m-fl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);font-weight:700;margin-bottom:4px;display:block;font-family:'Barlow Condensed',sans-serif}
+.m-fi{width:100%;background:var(--dk4);border:1px solid var(--bd2);border-radius:var(--rad);padding:7px 10px;font-size:12px;color:var(--txt);font-family:'Barlow',sans-serif}
+.m-fi:focus{outline:none;border-color:var(--lime)}
+.m-fi::placeholder{color:var(--txt4)}
+textarea.m-fi{resize:vertical;min-height:72px}
+.m-cta{width:100%;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);padding:12px;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.5px;cursor:pointer;transition:all .18s}
+.m-cta:hover{background:var(--lime2);transform:translateY(-1px)}
+.m-cta2{width:100%;background:var(--dk3);color:var(--txt);border:1px solid var(--bd2);border-radius:var(--rad2);padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s;margin-top:.4rem}
+.m-cta2:hover{border-color:var(--txt2)}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--dk2);border:1px solid var(--lime);border-radius:var(--rad2);padding:.7rem 1.1rem;font-size:12px;color:var(--lime);z-index:9999;opacity:0;transform:translateY(7px);transition:all .25s;pointer-events:none;max-width:310px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.3px}
+.toast.on{opacity:1;transform:translateY(0)}
+
+/* PARTS CARDS */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+.pcard{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);overflow:hidden;transition:all .22s;cursor:pointer;animation:pop .22s ease}
+.pcard:hover{border-color:var(--org);transform:translateY(-2px);box-shadow:0 6px 22px rgba(255,107,26,.12)}
+.pcard-img{height:100px;background:linear-gradient(135deg,var(--dk3),var(--dk4));display:flex;align-items:center;justify-content:center;font-size:40px;border-bottom:1px solid var(--bd)}
+.pcard-body{padding:.85rem}
+.pcat{display:inline-block;background:var(--dk4);border:1px solid var(--bd2);border-radius:3px;padding:1px 8px;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:.4rem}
+.pbrand{font-size:10px;color:var(--org);font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.pname{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--txt);margin-bottom:.35rem;line-height:1.2}
+.pprice{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--org);margin-bottom:.4rem}
+.pcompat{font-size:11px;color:var(--txt3);margin-bottom:.4rem;line-height:1.45}
+.pseller{font-size:10px;color:var(--txt2);margin-bottom:.4rem}
+.pstars{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--txt3)}
+.stars{color:var(--org);font-size:11px}
+.pacts{display:flex;gap:.4rem;padding:.65rem .85rem;border-top:1px solid var(--bd);background:var(--dk3)}
+.pbtn{flex:1;border:none;border-radius:var(--rad);padding:6px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s}
+.pbtn-p{background:var(--org);color:#fff}
+.pbtn-p:hover{background:var(--org2)}
+.pbtn-g{background:var(--dk4);color:var(--txt2);border:1px solid var(--bd)}
+.pbtn-g:hover{border-color:var(--txt);color:var(--txt)}
+
+/* SHOP CARDS */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:1rem}
+.scard{background:var(--dk2);border:1px solid var(--bd);border-radius:var(--rad3);overflow:hidden;transition:all .22s;cursor:pointer;animation:pop .22s ease}
+.scard:hover{border-color:var(--pur);transform:translateY(-2px);box-shadow:0 6px 22px rgba(155,89,245,.12)}
+.scard.feat{border-color:rgba(155,89,245,.28)}
+.scard-hd{padding:1rem;border-bottom:1px solid var(--bd);display:flex;gap:.8rem;align-items:flex-start}
+.sIco{width:44px;height:44px;background:var(--dk3);border:1px solid var(--bd2);border-radius:var(--rad2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sType{font-size:9px;color:var(--pur2);font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.sName{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--txt);line-height:1.2;margin-bottom:1px}
+.sLoc{font-size:11px;color:var(--txt3)}
+.scard-bd{padding:.9rem;border-bottom:1px solid var(--bd)}
+.sDesc{font-size:11px;color:var(--txt2);line-height:1.6;margin-bottom:.7rem}
+.sTags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.6rem}
+.stag{background:var(--dk3);border:1px solid var(--bd);border-radius:3px;padding:2px 7px;font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px}
+.sMeta{display:flex;gap:.9rem;flex-wrap:wrap}
+.smi{font-size:10px;color:var(--txt3)}
+.smi strong{color:var(--txt2)}
+.scard-ft{display:flex;gap:.4rem;padding:.7rem .9rem;background:var(--dk3)}
+.sbtn{flex:1;border:none;border-radius:var(--rad);padding:7px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:all .15s}
+.sbtn-p{background:var(--pur);color:#fff}
+.sbtn-p:hover{background:var(--pur2)}
+.sbtn-g{background:var(--dk4);color:var(--txt2);border:1px solid var(--bd)}
+.sbtn-g:hover{border-color:var(--txt);color:var(--txt)}
+
+/* TIP BOX */
+.tip-box{background:var(--dk3);border:1px solid var(--bd2);border-radius:var(--rad2);padding:.8rem 1rem;margin-top:.8rem;font-size:11px;color:var(--txt2);line-height:1.6}
+.tip-box strong{color:var(--lime)}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <div class="logo" onclick="switchTab('marketplace')">
+      <div class="logo-badge">&#9889;</div>
+      <div>
+        <div class="logo-text">Rev<em>Connect</em></div>
+        <div class="logo-tag">Golf Cart Marketplace</div>
+      </div>
+    </div>
+    <div class="hd-srch">
+      <span class="hd-srch-ico">&#128269;</span>
+      <input id="gsearch" type="text" placeholder="Search carts, parts, events, shops..." oninput="onSearch()">
+    </div>
+    <nav class="hd-tabs">
+      <button id="ht-marketplace" class="hd-tab on" onclick="switchTab('marketplace')">Marketplace</button>
+      <button id="ht-parts" class="hd-tab" onclick="switchTab('parts')">Parts</button>
+      <button id="ht-events" class="hd-tab" onclick="switchTab('events')">Events</button>
+      <button id="ht-mods" class="hd-tab" onclick="switchTab('mods')">Mods & Shops</button>
+    </nav>
+    <button class="hd-cta" onclick="switchTab('sell')">+ List Your Cart</button>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tabbar-in">
+    <div id="tb-marketplace" class="tb on" onclick="switchTab('marketplace')">
+      <span class="tb-ico">&#128722;</span> Marketplace <span class="tb-ct" id="tc-marketplace">14</span>
+    </div>
+    <div id="tb-parts" class="tb" onclick="switchTab('parts')">
+      <span class="tb-ico">&#128295;</span> Parts Finder <span class="tb-ct" id="tc-parts">15</span>
+    </div>
+    <div id="tb-events" class="tb" onclick="switchTab('events')">
+      <span class="tb-ico">&#127937;</span> Meets &amp; Events <span class="tb-ct" id="tc-events">8</span>
+    </div>
+    <div id="tb-mods" class="tb" onclick="switchTab('mods')">
+      <span class="tb-ico">&#128295;</span> Mods &amp; Shops <span class="tb-ct" id="tc-mods">8</span>
+    </div>
+    <div id="tb-sell" class="tb" onclick="switchTab('sell')">
+      <span class="tb-ico">&#128203;</span> List &amp; Sell
+    </div>
+  </div>
+</div>
+
+<div id="heroWrap">
+<div class="hero">
+  <div class="hero-in">
+    <div>
+      <div class="hero-eyebrow">Florida&#8217;s #1 Golf Cart Marketplace</div>
+      <h1 class="hero-title">Buy. Sell.<br>Trade. <em>Rev Up.</em></h1>
+      <p class="hero-sub">Dealers, online retailers, and private sellers &#8212; all in one place. Find your perfect cart, parts, local events, and nearby shops.</p>
+      <div class="hero-stats">
+        <div><div class="stat-val">1,240+</div><div class="stat-lbl">Active Listings</div></div>
+        <div><div class="stat-val">340+</div><div class="stat-lbl">Verified Dealers</div></div>
+        <div><div class="stat-val">48</div><div class="stat-lbl">Events Near You</div></div>
+        <div><div class="stat-val">12K+</div><div class="stat-lbl">Parts in Stock</div></div>
+      </div>
+    </div>
+    <div class="hero-btns">
+      <button class="hero-btn hero-btn-p" onclick="switchTab('marketplace')">Browse Carts</button>
+      <button class="hero-btn hero-btn-s" onclick="switchTab('sell')">+ List Your Cart</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <section id="main"></section>
+</div>
+
+<div id="mOverlay" class="moverlay" onclick="closeModalOverlay(event)">
+  <div class="modal" id="mContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+var LISTINGS=[{"id":1,"type":"buy","cat":"dealer","brand":"Club Car","model":"Onward 4","year":2023,"price":14995,"miles":180,"color":"Midnight Black","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":45,"img":"🛻","loc":"Naples, FL","seller":"Sun Coast Golf Carts","badge":"Certified Dealer","condition":"New","features":["Lifted 4 inch","LED Lights","Custom Wheels","Rear Flip Seat"]},{"id":2,"type":"buy","cat":"dealer","brand":"Yamaha","model":"Drive2 PTV","year":2022,"price":8750,"miles":1200,"color":"Pearl White","seats":2,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Sarasota, FL","seller":"Gulf Coast Carts","badge":"Certified Dealer","condition":"Used","features":["Custom Top","USB Charging","Street Legal","DOT Tires"]},{"id":3,"type":"buy","cat":"private","brand":"EZ-GO","model":"RXV Elite","year":2021,"price":6500,"miles":3400,"color":"Forest Green","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Fort Myers, FL","seller":"James T.","badge":"Private Party","condition":"Used","features":["Upgraded Lights","New Tires","Sound System","Custom Wrap"]},{"id":4,"type":"buy","cat":"online","brand":"Club Car","model":"Tempo","year":2024,"price":11200,"miles":0,"color":"Sandstone Beige","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Online - Ships Nationwide","seller":"CartNation.com","badge":"Online Dealer","condition":"New","features":["Factory Warranty","Free Shipping","Assembled","5yr Warranty"]},{"id":5,"type":"buy","cat":"private","brand":"Yamaha","model":"G29 Drive","year":2019,"price":4200,"miles":6800,"color":"Red","seats":2,"motor":"Gas","battery":"N/A","topSpeed":20,"range":null,"img":"🛻","loc":"Tampa, FL","seller":"Maria G.","badge":"Private Party","condition":"Good","features":["New Belts","Fresh Tune Up","Custom Seat","Rear Basket"]},{"id":6,"type":"buy","cat":"dealer","brand":"Polaris","model":"GEM e4","year":2023,"price":13800,"miles":220,"color":"Electric Blue","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":25,"range":30,"img":"🛻","loc":"Orlando, FL","seller":"Premier Cart World","badge":"Certified Dealer","condition":"New","features":["Street Legal","DOT Certified","Rear Camera","Bluetooth Audio"]},{"id":7,"type":"buy","cat":"online","brand":"ICON","model":"i60L","year":2024,"price":9999,"miles":0,"color":"Matte Black","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":25,"range":50,"img":"🛻","loc":"Online - Ships Nationwide","seller":"IconEvCart.com","badge":"Online Dealer","condition":"New","features":["Lifted 6 inch","Digital Dash","USB Ports","LED Pkg"]},{"id":8,"type":"sell","cat":"private","brand":"EZ-GO","model":"Express L6","year":2020,"price":9500,"miles":2200,"color":"Custom Camo","seats":6,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":38,"img":"🛻","loc":"Bonita Springs, FL","seller":"Derek M.","badge":"Private Party","condition":"Excellent","features":["6 Passenger","Lifted 6 inch","Hunting Build","Brush Guard"]},{"id":9,"type":"sell","cat":"dealer","brand":"Club Car","model":"Onward 2","year":2021,"price":7200,"miles":980,"color":"White","seats":2,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Clearwater, FL","seller":"Bay Area Golf Carts","badge":"Certified Dealer","condition":"Used","features":["Recent Service","New Tires","Clean Title","Trades Welcome"]},{"id":10,"type":"trade","cat":"private","brand":"Club Car","model":"DS 4 Passenger","year":2018,"price":5200,"miles":4100,"color":"White","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":28,"img":"🛻","loc":"Clearwater, FL","seller":"Tony V.","badge":"Trade Offer","condition":"Good","features":["Trade for Lithium","Clean Title","Runs Great","New Batteries 2023"]},{"id":11,"type":"trade","cat":"private","brand":"Yamaha","model":"Drive2","year":2020,"price":6800,"miles":3100,"color":"Blue","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Bradenton, FL","seller":"Rick S.","badge":"Trade Offer","condition":"Excellent","features":["Trade for 6-Seat","Custom Wrap","Sound System","LED Lights"]},{"id":12,"type":"rent","cat":"dealer","brand":"Club Car","model":"Onward HP","year":2023,"price":89,"miles":null,"color":"White","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":19,"range":40,"img":"🛻","loc":"Marco Island, FL","seller":"Island Cart Rentals","badge":"Rental Fleet","condition":"New","features":["Daily Rate","GPS Included","Delivery Available","Charger Included"],"rentUnit":"day"},{"id":13,"type":"rent","cat":"dealer","brand":"Yamaha","model":"Drive2","year":2022,"price":450,"miles":null,"color":"White","seats":4,"motor":"Electric","battery":"Lead Acid","topSpeed":19,"range":36,"img":"🛻","loc":"Clearwater Beach, FL","seller":"Beach Wheels LLC","badge":"Rental Fleet","condition":"Good","features":["Weekly Rate","Street Legal","Beach Delivery","Charger Included"],"rentUnit":"week"},{"id":14,"type":"rent","cat":"online","brand":"Bintelli","model":"Beyond 4PR","year":2023,"price":299,"miles":null,"color":"Various","seats":4,"motor":"Electric","battery":"Lithium","topSpeed":25,"range":45,"img":"🛻","loc":"Ships to Your Door","seller":"RentMyCart.com","badge":"Online Dealer","condition":"New","features":["Weekend Rate","Nationwide","Free Delivery","Insurance Included"],"rentUnit":"weekend"}];
+var PARTS=[{"id":1,"name":"48V 105Ah Lithium Battery Pack","brand":"Allied Lithium","fits":["Club Car","EZ-GO","Yamaha"],"price":2199,"seller":"CartBatteryPros.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.8,"reviews":234,"compat":"Universal 48V Systems"},{"id":2,"name":"6 Inch Lift Kit - Heavy Duty A-Arm","brand":"MadJax","fits":["Club Car DS","Club Car Precedent"],"price":389,"seller":"LiftMyCart.com","cat":"Suspension","loc":"Ships Nationwide","img":"🔧","rating":4.7,"reviews":189,"compat":"Club Car DS/Precedent 2000+"},{"id":3,"name":"Fold-Down Windshield - Tinted","brand":"National Cart","fits":["EZ-GO","Yamaha"],"price":145,"seller":"CartPartsWarehouse","cat":"Body","loc":"Local + Ships","img":"🪟","rating":4.5,"reviews":98,"compat":"EZ-GO TXT/RXV, Yamaha G29"},{"id":4,"name":"High-Speed Motor Controller 400A","brand":"Alltrax","fits":["Club Car","EZ-GO","Yamaha"],"price":549,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"⚡","rating":4.9,"reviews":412,"compat":"48V DC Systems"},{"id":5,"name":"10 Inch Aluminum Wheel Set (4)","brand":"Cali Off-Road","fits":["Universal 4 Lug"],"price":289,"seller":"CartWheelz.com","cat":"Wheels","loc":"Ships Nationwide","img":"⭕","rating":4.6,"reviews":167,"compat":"Universal 4-Lug Pattern"},{"id":6,"name":"23x10.5x12 All-Terrain Tires (4)","brand":"Kenda","fits":["Universal"],"price":349,"seller":"TirePros Cart Division","cat":"Tires","loc":"Local + Ships","img":"🔘","rating":4.7,"reviews":203,"compat":"10 and 12 Inch Rims"},{"id":7,"name":"Rear Flip Seat Kit - 2 Passenger","brand":"Madjax","fits":["Club Car DS","EZ-GO TXT"],"price":199,"seller":"CartSeats Direct","cat":"Seating","loc":"Ships Nationwide","img":"💺","rating":4.4,"reviews":88,"compat":"Club Car DS, EZ-GO TXT"},{"id":8,"name":"48V 30A DC-DC Converter","brand":"Navitas","fits":["Universal 48V"],"price":89,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"⚡","rating":4.8,"reviews":156,"compat":"Universal 48V Carts"},{"id":9,"name":"LED Light Bar Kit 30 Inch","brand":"Rigid Industries","fits":["Universal"],"price":229,"seller":"CartAccessories.com","cat":"Lighting","loc":"Ships Nationwide","img":"💡","rating":4.9,"reviews":321,"compat":"Universal Mount"},{"id":10,"name":"Bluetooth 4-Speaker Sound System","brand":"Rockville","fits":["Universal"],"price":319,"seller":"CartAudio Direct","cat":"Audio","loc":"Ships Nationwide","img":"🔊","rating":4.6,"reviews":278,"compat":"Universal 12V/48V"},{"id":11,"name":"48V 15A Smart Battery Charger","brand":"Lester Summit","fits":["Universal 48V"],"price":175,"seller":"CartBatteryPros.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.7,"reviews":142,"compat":"Universal 48V Lead Acid"},{"id":12,"name":"Universal Cargo Rack - Rear","brand":"RHOX","fits":["Club Car","EZ-GO","Yamaha"],"price":115,"seller":"CartGear.com","cat":"Accessories","loc":"Ships Nationwide","img":"📦","rating":4.5,"reviews":67,"compat":"Universal Bolt-On"},{"id":13,"name":"Lithium Drop-In Replacement 48V 60Ah","brand":"Dakota Lithium","fits":["EZ-GO","Yamaha","Club Car"],"price":1499,"seller":"GreenCartPower.com","cat":"Batteries","loc":"Ships Nationwide","img":"🔋","rating":4.7,"reviews":98,"compat":"Universal 48V Drop-In"},{"id":14,"name":"Golf Cart Roof - 80 Inch Double Roof","brand":"RHOX","fits":["Club Car","EZ-GO","Yamaha"],"price":259,"seller":"CartRoofs.com","cat":"Body","loc":"Ships Nationwide","img":"🏠","rating":4.5,"reviews":76,"compat":"Universal Post Mount"},{"id":15,"name":"Electric Fan Kit - Cooling System","brand":"D&D Motor Systems","fits":["Club Car","EZ-GO"],"price":79,"seller":"EVDrive Solutions","cat":"Electrical","loc":"Ships Nationwide","img":"🌀","rating":4.6,"reviews":112,"compat":"DC Motor Cooling, Universal"}];
+var EVENTS=[{"id":1,"name":"Gulf Coast Golf Cart Parade and Show","type":"Show","date":"2025-02-15","city":"Naples","state":"FL","zip":"34102","venue":"Tin City Waterfront","desc":"Annual golf cart parade down 5th Ave S followed by a cart show with awards in 12 categories. Trophies, vendors, food trucks, and live music all day.","registrationFee":35,"spectatorFee":0,"maxEntrants":200,"attending":147,"img":"🏆","organizer":"Naples Cart Club","website":"naplescarclub.com","featured":true},{"id":2,"name":"RevConnect Open Cart Meet - Clearwater","type":"Meet","date":"2025-01-25","city":"Clearwater","state":"FL","zip":"33755","venue":"Clearwater Beach Marina","desc":"Casual monthly meet. All carts welcome. No registration fee. Show up and roll. Prizes for Best Custom Build and Best Stock Cart.","registrationFee":0,"spectatorFee":0,"maxEntrants":null,"attending":83,"img":"🤝","organizer":"Tampa Bay Cart Crew","website":"tbcartcrew.com","featured":false},{"id":3,"name":"Florida Golf Cart Expo 2025","type":"Expo","date":"2025-03-08","city":"Orlando","state":"FL","zip":"32819","venue":"Orange County Convention Center","desc":"Three-day expo featuring the latest models from all major manufacturers, custom builders, parts vendors, and live demos.","registrationFee":0,"spectatorFee":25,"maxEntrants":null,"attending":4200,"img":"🏛️","organizer":"FL Cart Industry Assoc.","website":"flcartexpo.com","featured":true},{"id":4,"name":"Sarasota Cart Crawl","type":"Cruise","date":"2025-02-01","city":"Sarasota","state":"FL","zip":"34230","venue":"Sarasota Bayfront Park","desc":"Guided cruise through downtown Sarasota ending at Bayfront Park for judging. Street legal carts only. Route is 4.5 miles along the waterfront.","registrationFee":25,"spectatorFee":0,"maxEntrants":100,"attending":62,"img":"🛣️","organizer":"Sarasota Cart Cruisers","website":"sarasotacartcruisers.com","featured":false},{"id":5,"name":"Lifted and Loaded Cart Show - Tampa","type":"Show","date":"2025-04-12","city":"Tampa","state":"FL","zip":"33602","venue":"Tampa Riverwalk","desc":"All about lifted carts. Minimum 6 inch lift to enter show class. Separate class for stock carts. DJ, food trucks, and awards ceremony.","registrationFee":40,"spectatorFee":5,"maxEntrants":150,"attending":98,"img":"🏆","organizer":"Lifted Cart Nation","website":"liftedcartnation.com","featured":true},{"id":6,"name":"Charity Cart Drive - Fort Myers","type":"Charity","date":"2025-02-22","city":"Fort Myers","state":"FL","zip":"33901","venue":"Edison and Ford Winter Estates","desc":"Annual charity cruise benefiting Children's Hospital of Southwest Florida. All proceeds donated. Beautiful scenic route through historic neighborhoods.","registrationFee":50,"spectatorFee":10,"maxEntrants":80,"attending":54,"img":"❤️","organizer":"SW Florida Cart Assoc.","website":"swflcartassoc.org","featured":false},{"id":7,"name":"Georgia Golf Cart Roundup","type":"Show","date":"2025-03-22","city":"Augusta","state":"GA","zip":"30901","venue":"Augusta Riverwalk","desc":"One of Georgia's premier cart shows. All brands welcome. Indoor and outdoor display. Live music and food all weekend.","registrationFee":30,"spectatorFee":5,"maxEntrants":120,"attending":87,"img":"🏆","organizer":"Georgia Cart Owners Club","website":"gacartclub.com","featured":false},{"id":8,"name":"Peach State Cart Cruise - Atlanta","type":"Cruise","date":"2025-05-10","city":"Atlanta","state":"GA","zip":"30301","venue":"Piedmont Park","desc":"Cruise through Piedmont Park and Midtown Atlanta. Street legal carts only. Registration includes post-cruise cookout.","registrationFee":20,"spectatorFee":0,"maxEntrants":75,"attending":41,"img":"🛣️","organizer":"ATL Cart Crew","website":"atlcartcrew.com","featured":false}];
+var SHOPS=[{"id":1,"name":"Gulf Coast Custom Carts","type":"Full Service Shop","city":"Naples","state":"FL","zip":"34104","phone":"(239) 555-0142","rating":4.9,"reviews":287,"services":["Lift Kits","Custom Paint","Lithium Conversion","Sound Systems","LED Lighting","Street Legal Build","Wraps","Upholstery"],"brands":["Club Car","EZ-GO","Yamaha","Polaris"],"turnaround":"3-7 days","desc":"Southwest Florida's premier custom cart shop. 15 years building show-stoppers. Walk-ins welcome. Free estimates.","img":"🏪","featured":true},{"id":2,"name":"Electric Cart Specialists","type":"Electric Specialist","city":"Sarasota","state":"FL","zip":"34231","phone":"(941) 555-0278","rating":4.8,"reviews":198,"services":["Lithium Upgrades","Motor Upgrades","Controller Tuning","Battery Install","Charging Systems","Diagnostics","Performance Tuning"],"brands":["Universal","Club Car","EZ-GO","Yamaha"],"turnaround":"1-3 days","desc":"EV-only cart shop. We speak electric. Specializing in lithium conversions and performance motor upgrades. No gas carts.","img":"⚡","featured":true},{"id":3,"name":"Lifted Cart Co.","type":"Suspension and Lift","city":"Tampa","state":"FL","zip":"33612","phone":"(813) 555-0394","rating":4.7,"reviews":156,"services":["Lift Kits","Wheel and Tire Packages","Spindle Lifts","A-Arm Suspension","Alignment","Off-Road Builds","Drop Axle"],"brands":["MadJax","RHOX","Universal"],"turnaround":"Same Day","desc":"Tampa's go-to shop for lifts, wheels, and tires. Same-day service on most lift kit installs. Huge wheel inventory.","img":"🔧","featured":false},{"id":4,"name":"Cart Wraps and Graphics - SW FL","type":"Wraps and Paint","city":"Fort Myers","state":"FL","zip":"33907","phone":"(239) 555-0517","rating":4.8,"reviews":134,"services":["Full Vinyl Wraps","Partial Wraps","Custom Graphics","Color Change Wraps","Ceramic Coating","Paint Protection"],"brands":["3M","Avery Dennison","XPEL"],"turnaround":"2-5 days","desc":"Award-winning wraps for golf carts. Over 500 carts wrapped. Custom designs from scratch. Color matching available.","img":"🎨","featured":true},{"id":5,"name":"SoundCart Audio","type":"Audio and Electronics","city":"Clearwater","state":"FL","zip":"33759","phone":"(727) 555-0631","rating":4.6,"reviews":89,"services":["Sound Systems","Bluetooth Audio","GPS Tracking","Backup Cameras","LED Lighting","Dash Displays","USB Charging"],"brands":["Rockville","JL Audio","Pioneer","Kenwood"],"turnaround":"Same Day","desc":"Golf cart audio specialists. From simple Bluetooth speakers to full competition-grade sound systems. Same day installs.","img":"🔊","featured":false},{"id":6,"name":"CartWorks Performance","type":"Performance Shop","city":"Orlando","state":"FL","zip":"32808","phone":"(407) 555-0752","rating":4.9,"reviews":312,"services":["Motor Swap","Controller Tuning","Top Speed Builds","Torque Upgrades","Full Performance Build","Dyno Testing","Street Racing Builds"],"brands":["Navitas","Alltrax","D&D Motor","Ride-4-Fun"],"turnaround":"5-10 days","desc":"Florida's number one performance cart shop. We have built carts exceeding 55 MPH. Street to race builds, all levels.","img":"🏎️","featured":true},{"id":7,"name":"Peach State Cart Customs","type":"Full Service Shop","city":"Atlanta","state":"GA","zip":"30318","phone":"(404) 555-0883","rating":4.7,"reviews":201,"services":["Custom Paint","Lift Kits","Upholstery","LED Lighting","Sound Systems","Street Legal Build","Wraps"],"brands":["Club Car","EZ-GO","Yamaha","ICON"],"turnaround":"4-8 days","desc":"Georgia's premier full-service cart customization shop. Show builds, utility builds, and everything in between.","img":"🏪","featured":false},{"id":8,"name":"Battery Barn - Cart Division","type":"Battery and Charging","city":"Clearwater","state":"FL","zip":"33756","phone":"(727) 555-0944","rating":4.7,"reviews":178,"services":["Battery Replacement","Lithium Conversion","Charging System Repair","Load Testing","Battery Monitoring","Warranty Service"],"brands":["Trojan","Crown","Allied Lithium","Dakota Lithium"],"turnaround":"Same Day","desc":"Dedicated golf cart battery and charging specialists. Lithium and lead acid. Same day battery installs and testing.","img":"🔋","featured":false}];
+
+var S={tab:'marketplace',sub:'buy',q:'',flt:{}};
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function esc(s){var r=String(s||'');r=r.split('&').join('&amp;');r=r.split('<').join('&lt;');r=r.split('>').join('&gt;');r=r.split('"').join('&quot;');return r;}
+function fmt(n){if(n==null)return'—';return '$'+Number(n).toLocaleString();}
+function fmtDate(d){var p=d.split('-');var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return{mo:mo[parseInt(p[1])-1],dy:parseInt(p[2]),yr:p[0]};}
+function stars(r){var s='';for(var i=0;i<5;i++)s+=i<Math.floor(r)?'★':'☆';return s;}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2600);}
+function fv(id){var e=document.getElementById(id);return e?e.value:'';}
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+function switchTab(t){
+  S.tab=t;S.q=document.getElementById('gsearch')?document.getElementById('gsearch').value:'';
+  document.querySelectorAll('.tb').forEach(function(el){el.classList.remove('on');});
+  var el=document.getElementById('tb-'+t);if(el)el.classList.add('on');
+  document.querySelectorAll('.hd-tab').forEach(function(el){el.classList.remove('on');});
+  var hel=document.getElementById('ht-'+t);if(hel)hel.classList.add('on');
+  var hero=document.getElementById('heroWrap');if(hero)hero.style.display=(t==='marketplace'||t==='sell')?'':'none';
+  renderSidebar();renderMain();
+}
+function setSub(s){
+  S.sub=s;
+  document.querySelectorAll('.stab').forEach(function(el){el.className='stab';});
+  var el=document.getElementById('st-'+s);if(el)el.classList.add('on-'+s);
+  renderMain();
+}
+function onSearch(){S.q=document.getElementById('gsearch')?document.getElementById('gsearch').value:'';renderMain();}
+function clearAll(){
+  S.flt={};S.q='';
+  document.querySelectorAll('.fi').forEach(function(el){el.value='';});
+  document.querySelectorAll('.chip').forEach(function(el){el.classList.remove('on');});
+  if(document.getElementById('gsearch'))document.getElementById('gsearch').value='';
+  renderMain();
+}
+function chipSet(el,key,val){
+  var on=el.classList.contains('on');
+  document.querySelectorAll('[data-grp="'+key+'"]').forEach(function(c){c.classList.remove('on');});
+  if(!on){el.classList.add('on');S.flt[key]=val;}else{delete S.flt[key];}
+  renderMain();
+}
+function doFilter(){
+  var t=S.tab;
+  if(t==='marketplace'){S.flt.brand=fv('fb');S.flt.motor=fv('fm');S.flt.battery=fv('fbt');S.flt.seats=fv('fst');S.flt.condition=fv('fc');S.flt.seller=fv('fsl');S.flt.minP=fv('fmin');S.flt.maxP=fv('fmax');S.flt.loc=fv('floc');}
+  if(t==='parts'){S.flt.pcat=fv('fp_cat');S.flt.pfits=fv('fp_fits');S.flt.pbrand=fv('fp_brand');S.flt.pminP=fv('fp_min');S.flt.pmaxP=fv('fp_max');S.flt.ploc=fv('fp_loc');}
+  if(t==='events'){S.flt.etype=fv('fe_type');S.flt.estate=fv('fe_state');S.flt.ecity=fv('fe_city');}
+  if(t==='mods'){S.flt.mtype=fv('fm_type');S.flt.mcity=fv('fm_city');S.flt.mstate=fv('fm_state');S.flt.msvc=fv('fm_svc');}
+  renderMain();
+}
+
+// ═══════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════
+function renderSidebar(){
+  var sb=document.getElementById('sidebar');if(!sb)return;
+  var t=S.tab;if(t==='sell'){sb.innerHTML='';return;}
+  var h='<div class="sb-head">Filters <span class="sb-clr" onclick="clearAll()">Clear All<\/span><\/div>';
+  if(t==='marketplace'){
+    h+='<div class="fsec"><div class="flbl">Brand<\/div><div class="chips">';
+    ['Club Car','EZ-GO','Yamaha','Polaris','ICON','Bintelli'].forEach(function(b){h+='<div class="chip" data-grp="brand" onclick="chipSet(this,\'brand\',\''+b+'\')">'+b+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Motor<\/div><div class="chips">';
+    ['Electric','Gas'].forEach(function(m){h+='<div class="chip" data-grp="motor" onclick="chipSet(this,\'motor\',\''+m+'\')">'+m+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Battery<\/div><div class="chips">';
+    ['Lithium','Lead Acid'].forEach(function(b){h+='<div class="chip" data-grp="battery" onclick="chipSet(this,\'battery\',\''+b+'\')">'+b+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Seats<\/div><div class="chips">';
+    ['2','4','6'].forEach(function(s){h+='<div class="chip" data-grp="seats" onclick="chipSet(this,\'seats\',\''+s+'\')">'+s+' Seat<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Condition<\/div><div class="chips">';
+    ['New','Excellent','Used','Good'].forEach(function(c){h+='<div class="chip" data-grp="condition" onclick="chipSet(this,\'condition\',\''+c+'\')">'+c+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Seller Type<\/div><div class="chips">';
+    [['dealer','Dealer'],['private','Private'],['online','Online']].forEach(function(x){h+='<div class="chip" data-grp="seller" onclick="chipSet(this,\'seller\',\''+x[0]+'\')">'+x[1]+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow"><input class="fi" id="fmin" type="number" placeholder="Min $" oninput="doFilter()"><input class="fi" id="fmax" type="number" placeholder="Max $" oninput="doFilter()"><\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Location<\/div><input class="fi" id="floc" type="text" placeholder="City, State or ZIP" oninput="doFilter()"><\/div>';
+  }
+  if(t==='parts'){
+    h+='<div class="fsec"><div class="flbl">Category<\/div><div class="chips">';
+    ['Batteries','Suspension','Electrical','Wheels','Tires','Body','Seating','Lighting','Audio','Accessories'].forEach(function(c){h+='<div class="chip" data-grp="pcat" onclick="chipSet(this,\'pcat\',\''+c+'\')">'+c+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Fits My Cart<\/div><select class="fi" id="fp_fits" onchange="doFilter()"><option value="">All Brands<\/option><option>Club Car<\/option><option>EZ-GO<\/option><option>Yamaha<\/option><option>Polaris<\/option><option>Universal<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">Price Range<\/div><div class="frow"><input class="fi" id="fp_min" type="number" placeholder="Min $" oninput="doFilter()"><input class="fi" id="fp_max" type="number" placeholder="Max $" oninput="doFilter()"><\/div><\/div>';
+  }
+  if(t==='events'){
+    h+='<div class="fsec"><div class="flbl">Event Type<\/div><div class="chips">';
+    ['Show','Meet','Expo','Cruise','Charity'].forEach(function(tp){h+='<div class="chip" data-grp="etype" onclick="chipSet(this,\'etype\',\''+tp+'\')">'+tp+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fe_state" onchange="doFilter()"><option value="">All States<\/option><option>FL<\/option><option>GA<\/option><option>TX<\/option><option>CA<\/option><option>NC<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fe_city" type="text" placeholder="e.g. Naples, Tampa..." oninput="doFilter()"><\/div>';
+  }
+  if(t==='mods'){
+    h+='<div class="fsec"><div class="flbl">Shop Type<\/div><div class="chips">';
+    ['Full Service','Electric Specialist','Suspension and Lift','Wraps and Paint','Audio and Electronics','Performance Shop','Battery and Charging'].forEach(function(tp){h+='<div class="chip" data-grp="mtype" onclick="chipSet(this,\'mtype\',\''+tp+'\')">'+tp+'<\/div>';});
+    h+='<\/div><\/div>';
+    h+='<div class="fsec"><div class="flbl">Service Needed<\/div><select class="fi" id="fm_svc" onchange="doFilter()"><option value="">Any Service<\/option><option>Lift Kit<\/option><option>Lithium Conversion<\/option><option>Custom Paint<\/option><option>Wrap<\/option><option>Sound System<\/option><option>LED Lighting<\/option><option>Performance Tuning<\/option><option>Street Legal Build<\/option><\/select><\/div>';
+    h+='<div class="fsec"><div class="flbl">City<\/div><input class="fi" id="fm_city" type="text" placeholder="e.g. Naples, Tampa..." oninput="doFilter()"><\/div>';
+    h+='<div class="fsec"><div class="flbl">State<\/div><select class="fi" id="fm_state" onchange="doFilter()"><option value="">All States<\/option><option>FL<\/option><option>GA<\/option><option>TX<\/option><\/select><\/div>';
+  }
+  h+='<button class="apply-btn" onclick="doFilter()">Apply Filters<\/button>';
+  sb.innerHTML=h;
+}
+
+// ═══════════════════════════════════════
+// FILTER LOGIC
+// ═══════════════════════════════════════
+function filteredListings(){
+  var f=S.flt,q=S.q.toLowerCase(),sub=S.sub;
+  return LISTINGS.filter(function(l){
+    if(l.type!==sub)return false;
+    if(f.brand&&l.brand!==f.brand)return false;
+    if(f.motor&&l.motor!==f.motor)return false;
+    if(f.battery&&l.battery!==f.battery)return false;
+    if(f.seats&&String(l.seats)!==f.seats)return false;
+    if(f.condition&&l.condition!==f.condition)return false;
+    if(f.seller&&l.cat!==f.seller)return false;
+    if(f.minP&&l.price<parseInt(f.minP))return false;
+    if(f.maxP&&l.price>parseInt(f.maxP))return false;
+    if(f.loc&&l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0)return false;
+    if(q){var h=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color).toLowerCase();if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+function filteredParts(){
+  var f=S.flt,q=S.q.toLowerCase();
+  return PARTS.filter(function(p){
+    if(f.pcat&&p.cat!==f.pcat)return false;
+    if(f.pfits&&p.fits.indexOf(f.pfits)<0&&p.fits[0]!=='Universal')return false;
+    if(f.pbrand&&p.brand.toLowerCase().indexOf(f.pbrand.toLowerCase())<0)return false;
+    if(f.pminP&&p.price<parseInt(f.pminP))return false;
+    if(f.pmaxP&&p.price>parseInt(f.pmaxP))return false;
+    if(f.ploc&&p.loc.indexOf(f.ploc)<0)return false;
+    if(q){var h=(p.name+' '+p.brand+' '+p.cat+' '+p.compat).toLowerCase();if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+function filteredEvents(){
+  var f=S.flt,q=S.q.toLowerCase();
+  return EVENTS.filter(function(e){
+    if(f.etype&&e.type!==f.etype)return false;
+    if(f.estate&&e.state!==f.estate)return false;
+    if(f.ecity&&e.city.toLowerCase().indexOf(f.ecity.toLowerCase())<0)return false;
+    if(f.efree==='free'&&e.registrationFee>0)return false;
+    if(f.efree==='paid'&&e.registrationFee===0)return false;
+    if(q){var h=(e.name+' '+e.city+' '+e.type+' '+e.desc).toLowerCase();if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+function filteredShops(){
+  var f=S.flt,q=S.q.toLowerCase();
+  return SHOPS.filter(function(s){
+    if(f.mtype&&s.type.toLowerCase().indexOf(f.mtype.toLowerCase())<0)return false;
+    if(f.mstate&&s.state!==f.mstate)return false;
+    if(f.mcity&&s.city.toLowerCase().indexOf(f.mcity.toLowerCase())<0)return false;
+    if(f.msvc&&s.services.join(' ').toLowerCase().indexOf(f.msvc.toLowerCase())<0)return false;
+    if(q){var h=(s.name+' '+s.type+' '+s.city+' '+s.services.join(' ')+' '+s.desc).toLowerCase();if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════
+// MAIN RENDER
+// ═══════════════════════════════════════
+function renderMain(){
+  var el=document.getElementById('main');if(!el)return;
+  var t=S.tab;
+  if(t==='marketplace')el.innerHTML=renderMarket();
+  else if(t==='parts')el.innerHTML=renderParts();
+  else if(t==='events')el.innerHTML=renderEvents();
+  else if(t==='mods')el.innerHTML=renderMods();
+  else if(t==='sell')el.innerHTML=renderSell();
+  // Re-attach live search button listeners after render
+  attachLiveSearchListeners();
+}
+
+function attachLiveSearchListeners(){
+  var mktBtn=document.getElementById('mkt-live-btn');
+  if(mktBtn)mktBtn.addEventListener('click',runMarketplaceLiveSearch);
+  var mktInp=document.getElementById('mkt-live-inp');
+  if(mktInp)mktInp.addEventListener('keydown',function(e){if(e.key==='Enter')runMarketplaceLiveSearch();});
+
+  var partsBtn=document.getElementById('parts-live-btn');
+  if(partsBtn)partsBtn.addEventListener('click',runPartsLiveSearch);
+  var partsInp=document.getElementById('parts-live-inp');
+  if(partsInp)partsInp.addEventListener('keydown',function(e){if(e.key==='Enter')runPartsLiveSearch();});
+
+  var evBtn=document.getElementById('ev-live-btn');
+  if(evBtn)evBtn.addEventListener('click',runEventsLiveSearch);
+  var evInp=document.getElementById('ev-live-inp');
+  if(evInp)evInp.addEventListener('keydown',function(e){if(e.key==='Enter')runEventsLiveSearch();});
+
+  var shopBtn=document.getElementById('shop-live-btn');
+  if(shopBtn)shopBtn.addEventListener('click',runShopLiveSearch);
+  var shopZip=document.getElementById('shop-zip-inp');
+  if(shopZip)shopZip.addEventListener('keydown',function(e){if(e.key==='Enter')runShopLiveSearch();});
+}
+
+// ═══════════════════════════════════════
+// BADGE HELPERS
+// ═══════════════════════════════════════
+function bdgCls(badge){
+  var m={'Certified Dealer':'bdg-dealer','Private Party':'bdg-private','Online Dealer':'bdg-online','Rental Fleet':'bdg-rental','Trade Offer':'bdg-trade'};
+  return m[badge]||'bdg-private';
+}
+function priceCls(type){return type==='buy'?'':' p-'+type;}
+
+// ═══════════════════════════════════════
+// MARKETPLACE — with live multi-site search
+// ═══════════════════════════════════════
+function renderMarket(){
+  var items=filteredListings();
+  var h='';
+
+  // Live multi-site search panel
+  h+='<div class="search-panel" style="margin-bottom:1.4rem">';
+  h+='<div class="sp-label">🔍 Search All Golf Cart Sites Simultaneously</div>';
+  h+='<div class="sp-row">';
+  h+='<input class="sp-inp" id="mkt-live-inp" placeholder="e.g. Club Car Onward 4 passenger lifted...">';
+  h+='<select class="sp-sel" id="mkt-live-cond"><option value="">Any Condition</option><option value="new">New</option><option value="used">Used</option></select>';
+  h+='<button class="sp-btn" id="mkt-live-btn">🔍 Search All Sites</button>';
+  h+='</div>';
+  h+='<div class="sp-hint">Opens CarGurus, eBay Motors, Facebook Marketplace, Golf Cart Trader & more with your search pre-filled</div>';
+  h+='<div id="mkt-live-results"></div>';
+  h+='</div>';
+
+  // Local listings
+  h+='<div class="stabs">';
+  [['buy','🛒 Buy'],['sell','💵 Sell'],['trade','⇌ Trade'],['rent','🚗 Rent']].forEach(function(x){
+    h+='<div id="st-'+x[0]+'" class="stab'+(S.sub===x[0]?' on-'+x[0]:'')+'" onclick="setSub(\''+x[0]+'\')">'+x[1]+'</div>';
+  });
+  h+='</div>';
+  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> local listings</span>';
+  h+='<select class="sort-sel"><option>Featured</option><option>Price: Low→High</option><option>Price: High→Low</option></select></div>';
+  if(!items.length){h+='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No Listings Found</div><div class="empty-s">Adjust your filters or search all sites above.</div></div>';}
+  else{
+    h+='<div class="grid">';
+    items.forEach(function(l){
+      var pStr=l.type==='rent'?fmt(l.price)+'<span class="pu"> / '+(l.rentUnit||'day')+'</span>':fmt(l.price);
+      h+='<div class="card" onclick="openCart('+l.id+')">'
+        +'<div class="card-img">'+esc(l.img)
+          +'<div class="card-badge '+bdgCls(l.badge)+'">'+esc(l.badge)+'</div>'
+          +'<div class="card-fav" onclick="event.stopPropagation();favIt(this)">♡</div>'
+        +'</div>'
+        +'<div class="card-body">'
+          +'<div class="card-yb">'+l.year+' · '+esc(l.brand)+'</div>'
+          +'<div class="card-model">'+esc(l.model)+'</div>'
+          +'<div class="card-price'+priceCls(l.type)+'">'+pStr+'</div>'
+          +'<div class="specs">'
+            +(l.motor?'<span class="sp">'+esc(l.motor)+'</span>':'')
+            +(l.seats?'<span class="sp">'+l.seats+' Seat</span>':'')
+            +(l.topSpeed?'<span class="sp">'+l.topSpeed+' mph</span>':'')
+            +(l.range?'<span class="sp">'+l.range+' mi range</span>':'')
+          +'</div>'
+          +'<div class="feats">'+l.features.slice(0,3).map(function(f){return'<span class="ft">'+esc(f)+'</span>';}).join('')+'</div>'
+          +'<div class="card-seller">'+esc(l.seller)+' · '+esc(l.condition)+'</div>'
+          +'<div class="card-loc">📍 '+esc(l.loc)+'</div>'
+        +'</div>'
+        +'<div class="card-acts">'
+          +'<button class="cbtn cbtn-p" onclick="event.stopPropagation();openCart('+l.id+')">View Details</button>'
+          +'<button class="cbtn cbtn-g" onclick="event.stopPropagation();toast(\'Saved ✓\')">Save</button>'
+        +'</div>'
+      +'</div>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+// ═══════════════════════════════════════
+// LIVE MARKETPLACE SEARCH
+// ═══════════════════════════════════════
+function runMarketplaceLiveSearch(){
+  var q=document.getElementById('mkt-live-inp')?document.getElementById('mkt-live-inp').value.trim():'';
+  var cond=document.getElementById('mkt-live-cond')?document.getElementById('mkt-live-cond').value:'';
+  var resEl=document.getElementById('mkt-live-results');
+  if(!q){toast('Enter a cart to search!');return;}
+  var enc=encodeURIComponent(q);
+  var sites=[
+    {name:'eBay Motors',ico:'🔵',color:'#e53238',desc:'Auctions & Buy It Now · Largest golf cart selection',url:'https://www.ebay.com/sch/i.html?_nkw='+enc+'+golf+cart&_sacat=6047'},
+    {name:'Facebook Marketplace',ico:'📘',color:'#1877f2',desc:'Local private sellers near you',url:'https://www.facebook.com/marketplace/search/?query='+enc+'+golf+cart'},
+    {name:'Craigslist',ico:'📋',color:'#800000',desc:'Local classifieds · Great deals nearby',url:'https://www.craigslist.org/search/sss?query='+enc+'+golf+cart&sort=rel'},
+    {name:'Golf Cart Trader',ico:'🛻',color:'#b8f241',desc:'#1 dedicated golf cart marketplace',url:'https://www.golfcarttrader.com/search?q='+enc},
+    {name:'CarGurus',ico:'🔍',color:'#e8600e',desc:'Price analysis & deal ratings',url:'https://www.cargurus.com/Cars/new/filterFacets.action?localSearchQuery='+enc+'+golf+cart'},
+    {name:'Golf Cart Resource',ico:'⛳',color:'#22c55e',desc:'Dealer network & used cart listings',url:'https://www.golfcartresource.com/golf-cart-dealers/?s='+enc},
+    {name:'Offer Up',ico:'🟢',color:'#0aaf0a',desc:'Local & shipped listings nationwide',url:'https://offerup.com/search/?q='+enc+'+golf+cart'},
+    {name:'Amazon',ico:'📦',color:'#ff9900',desc:'New carts & accessories',url:'https://www.amazon.com/s?k='+enc+'+golf+cart'},
+    {name:'Golf Cart King',ico:'👑',color:'#ffcc00',desc:'New cart dealer · Ships nationwide',url:'https://www.golfcartking.com/search?q='+enc},
+    {name:'EZGO Official',ico:'🏌️',color:'#003087',desc:'Factory new EZ-GO carts & dealer locator',url:'https://www.ezgo.com/'},
+    {name:'Club Car Official',ico:'🚗',color:'#cc0000',desc:'Factory new Club Car carts & dealers',url:'https://www.clubcar.com/us/en/consumer/find-dealer.html'},
+    {name:'Google Search',ico:'🌐',color:'#4285f4',desc:'Full web search for all listings',url:'https://www.google.com/search?q='+enc+'+golf+cart+for+sale'+(cond?'+'+cond:'')},
+  ];
+  resEl.innerHTML='<div class="live-grid">'+sites.map(function(s){
+    return '<a href="'+s.url+'" target="_blank" rel="noopener" class="live-card" style="border-left-color:'+s.color+'">'
+      +'<div class="lc-ico" style="background:'+s.color+'20">'+s.ico+'</div>'
+      +'<div><div class="lc-name">'+s.name+'</div><div class="lc-desc">'+s.desc+'</div></div>'
+      +'<div class="lc-arrow" style="color:'+s.color+'">→</div>'
+      +'</a>';
+  }).join('')+'</div>'
+  +'<div class="tip-box">💡 <strong>Tip:</strong> Golf Cart Trader and eBay Motors have the largest selections. For local deals, check Facebook Marketplace and Craigslist first.</div>';
+  toast('Searching '+sites.length+' golf cart sites! 🛻');
+}
+
+// ═══════════════════════════════════════
+// PARTS — with live multi-store search
+// ═══════════════════════════════════════
+function renderParts(){
+  var items=filteredParts();
+  var h='';
+
+  // Live parts search panel
+  h+='<div class="search-panel orange">';
+  h+='<div class="sp-label orange">🔧 Search All Parts Stores for Price Comparison</div>';
+  h+='<div class="sp-row">';
+  h+='<input class="sp-inp" id="parts-live-inp" placeholder="e.g. Club Car lift kit, 48V lithium battery, LED lights...">';
+  h+='<button class="sp-btn orange" id="parts-live-btn">Search All Stores</button>';
+  h+='</div>';
+  h+='<div class="sp-hint">Compare prices across Amazon, eBay, Cart Part, RHOX, MadJax, Summit Racing & more</div>';
+  h+='<div id="parts-live-results"></div>';
+  h+='</div>';
+
+  // Local parts catalog
+  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> parts in catalog</span></div>';
+  if(!items.length){h+='<div class="empty"><div class="empty-ico">🔧</div><div class="empty-t">No Parts Found</div><div class="empty-s">Try a different category or search all stores above.</div></div>';}
+  else{
+    h+='<div class="pgrid">';
+    items.forEach(function(p){
+      h+='<div class="pcard" onclick="openPart('+p.id+')">'
+        +'<div class="pcard-img">'+esc(p.img)+'</div>'
+        +'<div class="pcard-body">'
+          +'<div class="pcat">'+esc(p.cat)+'</div>'
+          +'<div class="pbrand">'+esc(p.brand)+'</div>'
+          +'<div class="pname">'+esc(p.name)+'</div>'
+          +'<div class="pprice">$'+p.price.toLocaleString()+'</div>'
+          +'<div class="pcompat">Fits: '+esc(p.compat)+'</div>'
+          +'<div class="pseller">🛒 '+esc(p.seller)+' · '+esc(p.loc)+'</div>'
+          +'<div class="pstars"><span class="stars">'+stars(p.rating)+'</span> '+p.rating+' ('+p.reviews+')</div>'
+        +'</div>'
+        +'<div class="pacts">'
+          +'<button class="pbtn pbtn-p" onclick="event.stopPropagation();toast(\'Added to cart ✓\')">Add to Cart</button>'
+          +'<button class="pbtn pbtn-g" onclick="event.stopPropagation();openPart('+p.id+')">Details</button>'
+        +'</div>'
+      +'</div>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+function runPartsLiveSearch(){
+  var q=document.getElementById('parts-live-inp')?document.getElementById('parts-live-inp').value.trim():'';
+  var resEl=document.getElementById('parts-live-results');
+  if(!q){toast('Enter a part to search!');return;}
+  var enc=encodeURIComponent(q);
+  var stores=[
+    {name:'Amazon',ico:'📦',color:'#ff9900',desc:'Fast shipping · Huge selection',url:'https://www.amazon.com/s?k='+enc+'+golf+cart'},
+    {name:'eBay Motors Parts',ico:'🔵',color:'#e53238',desc:'New & used parts · Best prices',url:'https://www.ebay.com/sch/i.html?_nkw='+enc+'+golf+cart&_sacat=6030'},
+    {name:'Cart Part',ico:'🛒',color:'#b8f241',desc:'#1 golf cart parts specialist',url:'https://www.cartpart.com/search?q='+enc},
+    {name:'Golf Cart Tire Supply',ico:'🔘',color:'#444',desc:'Tires, wheels & lift kits',url:'https://www.golfcarttiresupply.com/search?q='+enc},
+    {name:'MadJax',ico:'🔧',color:'#e67e00',desc:'Lift kits, seats & accessories',url:'https://www.madjax.com/search?q='+enc},
+    {name:'RHOX',ico:'⚙️',color:'#0066cc',desc:'OEM & aftermarket parts',url:'https://www.rhox.com/search?q='+enc},
+    {name:'Buggies Unlimited',ico:'🏌️',color:'#22c55e',desc:'Huge golf cart parts catalog',url:'https://www.buggiesunlimited.com/catalogsearch/result/?q='+enc},
+    {name:'Golf Cart Garage',ico:'🏠',color:'#9b59f5',desc:'Parts, accessories & supplies',url:'https://www.golfcartgarage.com/search?q='+enc},
+    {name:'Club Car Parts',ico:'🚗',color:'#cc0000',desc:'OEM Club Car replacement parts',url:'https://www.clubcar.com/us/en/consumer/parts-accessories.html'},
+    {name:'EVDrive Solutions',ico:'⚡',color:'#3b9eff',desc:'EV motors, controllers & batteries',url:'https://www.evdriveusa.com/search?q='+enc},
+    {name:'Trojan Battery',ico:'🔋',color:'#ff6b1a',desc:'Golf cart batteries direct',url:'https://www.trojanbattery.com/'},
+    {name:'Google Shopping',ico:'🌐',color:'#4285f4',desc:'Compare prices across all retailers',url:'https://www.google.com/search?q='+enc+'+golf+cart+part&tbm=shop'},
+  ];
+  resEl.innerHTML='<div class="live-grid">'+stores.map(function(s){
+    return '<a href="'+s.url+'" target="_blank" rel="noopener" class="live-card orange" style="border-left-color:'+s.color+'">'
+      +'<div class="lc-ico" style="background:'+s.color+'20">'+s.ico+'</div>'
+      +'<div><div class="lc-name">'+s.name+'</div><div class="lc-desc">'+s.desc+'</div></div>'
+      +'<div class="lc-arrow" style="color:'+s.color+'">→</div>'
+      +'</a>';
+  }).join('')+'</div>'
+  +'<div class="tip-box">💡 <strong>Tip:</strong> Cart Part and Buggies Unlimited specialize in golf cart parts. Amazon and eBay often have the best prices on universal items like batteries and wheels.</div>';
+  toast('Searching '+stores.length+' parts stores! 🔧');
+}
+
+// ═══════════════════════════════════════
+// EVENTS — with live web search
+// ═══════════════════════════════════════
+function renderEvents(){
+  var items=filteredEvents();
+  var h='';
+
+  // Live event search
+  h+='<div class="search-panel blue">';
+  h+='<div class="sp-label blue">📍 Search the Web for Golf Cart Events Near You</div>';
+  h+='<div class="sp-row">';
+  h+='<input class="sp-inp" id="ev-live-inp" placeholder="e.g. golf cart show Tampa 2025, cart meet Naples FL...">';
+  h+='<button class="sp-btn blue" id="ev-live-btn">Search Web</button>';
+  h+='</div>';
+  h+='<div class="sp-hint">Searches Google, Facebook Events, Eventbrite & golf cart club directories</div>';
+  h+='<div id="ev-live-results"></div>';
+  h+='</div>';
+
+  // Local events
+  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> events found</span></div>';
+  if(!items.length){h+='<div class="empty"><div class="empty-ico">🏁</div><div class="empty-t">No Events Found</div><div class="empty-s">Try a different location or search the web above.</div></div>';}
+  else{
+    h+='<div class="egrid">';
+    items.forEach(function(e){
+      var d=fmtDate(e.date);
+      h+='<div class="ecard'+(e.featured?' feat':'')+'" onclick="openEvent('+e.id+')">'
+        +'<div class="ecard-hd">'
+          +'<div class="eDateBox"><div class="eMo">'+d.mo+'</div><div class="eDy">'+d.dy+'</div></div>'
+          +'<div><div class="eType et-'+esc(e.type)+'">'+esc(e.type)+'</div>'
+            +'<div class="eName">'+esc(e.name)+'</div>'
+            +'<div class="eVenue">📍 '+esc(e.venue)+', '+esc(e.city)+', '+esc(e.state)+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="ecard-bd">'
+          +'<div class="eDesc">'+esc(e.desc.length>130?e.desc.slice(0,127)+'...':e.desc)+'</div>'
+          +'<div class="eMeta">'
+            +'<div class="emi">👤 <strong>'+e.attending+'</strong> attending</div>'
+            +(e.registrationFee===0?'<div class="emi" style="color:var(--ok)">✓ Free Entry</div>':'<div class="emi">Entry: $'+e.registrationFee+'</div>')
+          +'</div>'
+        +'</div>'
+        +'<div class="ecard-ft">'
+          +'<button class="ebtn ebtn-p" onclick="event.stopPropagation();toast(\'Registered ✓\')">Register</button>'
+          +'<button class="ebtn ebtn-g" onclick="event.stopPropagation();openEvent('+e.id+')">Details</button>'
+        +'</div>'
+      +'</div>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+function runEventsLiveSearch(){
+  var q=document.getElementById('ev-live-inp')?document.getElementById('ev-live-inp').value.trim():'';
+  var resEl=document.getElementById('ev-live-results');
+  if(!q){toast('Enter an event or location to search!');return;}
+  var enc=encodeURIComponent('golf cart '+q);
+  var sites=[
+    {name:'Google Events',ico:'🌐',color:'#4285f4',desc:'Full web search for events',url:'https://www.google.com/search?q='+enc+'+event+show+meet'},
+    {name:'Facebook Events',ico:'📘',color:'#1877f2',desc:'Local & regional cart events',url:'https://www.facebook.com/search/events/?q='+enc},
+    {name:'Eventbrite',ico:'🎟️',color:'#f05537',desc:'Ticketed golf cart events',url:'https://www.eventbrite.com/d/online/'+encodeURIComponent('golf cart')+'/?q='+enc},
+    {name:'Golf Cart Resource Events',ico:'⛳',color:'#22c55e',desc:'Industry events calendar',url:'https://www.golfcartresource.com/?s='+enc+'+event'},
+    {name:'GCGT Events',ico:'🏁',color:'#b8f241',desc:'Golf Cart Go To event listings',url:'https://www.golfcartgoto.com/events/'},
+    {name:'Meetup',ico:'🤝',color:'#ed1c40',desc:'Local golf cart clubs & meetups',url:'https://www.meetup.com/find/?keywords=golf+cart&source=EVENTS'},
+  ];
+  resEl.innerHTML='<div class="live-grid">'+sites.map(function(s){
+    return '<a href="'+s.url+'" target="_blank" rel="noopener" class="live-card blue" style="border-left-color:'+s.color+'">'
+      +'<div class="lc-ico" style="background:'+s.color+'20">'+s.ico+'</div>'
+      +'<div><div class="lc-name">'+s.name+'</div><div class="lc-desc">'+s.desc+'</div></div>'
+      +'<div class="lc-arrow" style="color:'+s.color+'">→</div>'
+      +'</a>';
+  }).join('')+'</div>';
+  toast('Searching for golf cart events! 🏁');
+}
+
+// ═══════════════════════════════════════
+// MODS & SHOPS — with live Google Places search
+// ═══════════════════════════════════════
+function renderMods(){
+  var items=filteredShops();
+  var h='';
+
+  // Live shop finder
+  h+='<div class="search-panel purple">';
+  h+='<div class="sp-label purple">📍 Find Golf Cart Shops Near You — Live Results</div>';
+  h+='<div class="sp-row">';
+  h+='<input class="sp-inp" id="shop-zip-inp" placeholder="Enter your ZIP code..." maxlength="5" style="max-width:160px">';
+  h+='<select class="sp-sel" id="shop-type-sel">';
+  h+='<option value="golf cart shop">All Golf Cart Services</option>';
+  h+='<option value="golf cart lift kit">Lift Kit Installation</option>';
+  h+='<option value="golf cart lithium battery">Lithium Conversion</option>';
+  h+='<option value="golf cart custom paint">Custom Paint & Wrap</option>';
+  h+='<option value="golf cart audio sound system">Audio & Sound System</option>';
+  h+='<option value="golf cart performance tuning">Performance Tuning</option>';
+  h+='<option value="golf cart battery replacement">Battery Replacement</option>';
+  h+='<option value="golf cart street legal">Street Legal Build</option>';
+  h+='</select>';
+  h+='<button class="sp-btn purple" id="shop-live-btn">🔍 Find Shops</button>';
+  h+='</div>';
+  h+='<div class="sp-hint">Powered by Google Places · Real shops with address, phone & ratings sorted by distance</div>';
+  h+='<div id="shop-live-results"></div>';
+  h+='</div>';
+
+  // Static shop directory
+  h+='<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt);margin-bottom:.6rem;letter-spacing:.5px">Featured <span style="color:var(--pur2)">Shop Directory</span></div>';
+  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> shops in directory</span></div>';
+  if(!items.length){h+='<div class="empty"><div class="empty-ico">🔩</div><div class="empty-t">No Shops Found</div><div class="empty-s">Try a different location or use the live finder above.</div></div>';}
+  else{
+    h+='<div class="sgrid">';
+    items.forEach(function(s){
+      h+='<div class="scard'+(s.featured?' feat':'')+'" onclick="openShop('+s.id+')">'
+        +'<div class="scard-hd">'
+          +'<div class="sIco">'+esc(s.img)+'</div>'
+          +'<div><div class="sType">'+esc(s.type)+'</div>'
+            +'<div class="sName">'+esc(s.name)+'</div>'
+            +'<div class="sLoc">📍 '+esc(s.city)+', '+esc(s.state)+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="scard-bd">'
+          +'<div class="sDesc">'+esc(s.desc.length>110?s.desc.slice(0,107)+'...':s.desc)+'</div>'
+          +'<div class="sTags">'+s.services.slice(0,5).map(function(sv){return'<span class="stag">'+esc(sv)+'</span>';}).join('')+(s.services.length>5?'<span class="stag">+'+(s.services.length-5)+' more</span>':'')+'</div>'
+          +'<div class="sMeta">'
+            +'<div class="smi"><span style="color:var(--org)">'+stars(s.rating)+'</span> <strong>'+s.rating+'</strong> ('+s.reviews+')</div>'
+            +'<div class="smi">⏱ <strong>'+esc(s.turnaround)+'</strong></div>'
+            +'<div class="smi">📞 '+esc(s.phone)+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div class="scard-ft">'
+          +'<button class="sbtn sbtn-p" onclick="event.stopPropagation();openShop('+s.id+')">Get Quote</button>'
+          +'<button class="sbtn sbtn-g" onclick="event.stopPropagation();toast(\'Shop saved ✓\')">Save Shop</button>'
+        +'</div>'
+      +'</div>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+
+// ═══════════════════════════════════════
+// LIVE SHOP SEARCH — Google Places
+// ═══════════════════════════════════════
+function runShopLiveSearch(){
+  var zip=document.getElementById('shop-zip-inp')?document.getElementById('shop-zip-inp').value.trim():'';
+  var type=document.getElementById('shop-type-sel')?document.getElementById('shop-type-sel').value:'golf cart shop';
+  var resEl=document.getElementById('shop-live-results');
+  if(!zip){toast('Enter your ZIP code first!');return;}
+
+  resEl.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--txt3)">'
+    +'<div style="font-size:24px;margin-bottom:.4rem">🔍</div>'
+    +'<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Finding shops near '+zip+'...</div>'
+    +'</div>';
+
+  if(!window.google){
+    var script=document.createElement('script');
+    script.src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDxiwMTncD53EuKRfCVVurCelnL8rAGtXw&libraries=places&callback=_gmapsGolfReady';
+    script.async=true;
+    window._gmapsGolfReady=function(){doGolfShopSearch(zip,type,resEl);};
+    document.head.appendChild(script);
+  } else {
+    doGolfShopSearch(zip,type,resEl);
+  }
+}
+
+function doGolfShopSearch(zip,type,resEl){
+  var mapDiv=document.getElementById('_gc_map');
+  if(!mapDiv){
+    mapDiv=document.createElement('div');
+    mapDiv.id='_gc_map';
+    mapDiv.style.cssText='width:1px;height:1px;position:absolute;left:-9999px';
+    document.body.appendChild(mapDiv);
+  }
+  var geocoder=new google.maps.Geocoder();
+  geocoder.geocode({address:zip},function(geoResults,geoStatus){
+    if(geoStatus!=='OK'||!geoResults.length){
+      resEl.innerHTML='<div style="padding:1rem;color:var(--pnk)">Could not find ZIP code '+zip+'. Please check and try again.</div>';
+      return;
+    }
+    var location=geoResults[0].geometry.location;
+    var city=geoResults[0].address_components.find(function(c){return c.types.indexOf('locality')>=0;})||{long_name:zip};
+    var map=new google.maps.Map(mapDiv,{center:location,zoom:12});
+    var service=new google.maps.places.PlacesService(map);
+    service.nearbySearch({
+      location:location,
+      radius:24000,
+      keyword:type
+    },function(results,status){
+      if(status!==google.maps.places.PlacesServiceStatus.OK||!results.length){
+        resEl.innerHTML='<div style="padding:1rem;color:var(--txt3)">No shops found near '+zip+' ('+status+'). Try a different ZIP or service type.</div>';
+        return;
+      }
+      var shops=results.map(function(p){
+        var dlat=p.geometry.location.lat()-location.lat();
+        var dlng=p.geometry.location.lng()-location.lng();
+        return Object.assign({},p,{distMiles:Math.sqrt(dlat*dlat+dlng*dlng)*69});
+      }).sort(function(a,b){return a.distMiles-b.distMiles;}).slice(0,12);
+
+      var completed=0;
+      var detailed=[];
+      shops.forEach(function(shop,i){
+        service.getDetails({
+          placeId:shop.place_id,
+          fields:['name','formatted_address','formatted_phone_number','rating','user_ratings_total','opening_hours','place_id']
+        },function(detail,dStatus){
+          detailed[i]=Object.assign({},shop,detail||{});
+          completed++;
+          if(completed===shops.length){
+            renderGolfShopResults(detailed,city.long_name,zip,type,resEl);
+          }
+        });
+      });
+    });
+  });
+}
+
+function renderGolfShopResults(shops,city,zip,type,resEl){
+  var starStr=function(r){
+    if(!r)return'<span style="color:var(--txt3);font-size:10px">No rating</span>';
+    return'<span style="color:var(--org)">'+('★').repeat(Math.min(Math.round(r),5))+'</span> <span style="font-size:10px;color:var(--txt2)">'+r.toFixed(1)+'</span>';
+  };
+  var openStr=function(h){
+    if(!h)return'';
+    return h.isOpen&&h.isOpen()?'<span class="src-open-yes">● OPEN</span>':'<span class="src-open-no">● CLOSED</span>';
+  };
+  resEl.innerHTML='<div style="margin-top:1rem">'
+    +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:var(--txt);margin-bottom:.3rem;letter-spacing:.5px">'
+    +type.toUpperCase()+' NEAR <span style="color:var(--pur2)">'+city+', '+zip+'</span></div>'
+    +'<div style="font-size:11px;color:var(--txt3);margin-bottom:.9rem">'+shops.length+' shops found · sorted by distance</div>'
+    +'<div class="shop-result-grid">'
+    +shops.map(function(s,i){
+      return '<div class="shop-result-card">'
+        +'<div class="src-header">'
+          +'<div class="src-name">'+(i+1)+'. '+esc(s.name)+'</div>'
+          +'<div class="src-dist">'+s.distMiles.toFixed(1)+' mi</div>'
+        +'</div>'
+        +'<div class="src-addr">📍 '+esc(s.formatted_address||s.vicinity||'Address unavailable')+'</div>'
+        +(s.formatted_phone_number?'<div class="src-phone">📞 <a href="tel:'+s.formatted_phone_number+'">'+esc(s.formatted_phone_number)+'</a></div>':'<div style="font-size:11px;color:var(--txt3);margin-bottom:.4rem">📞 Phone not listed</div>')
+        +'<div class="src-meta">'+starStr(s.rating)+(s.user_ratings_total?' <span style="font-size:10px;color:var(--txt3)">('+s.user_ratings_total.toLocaleString()+')</span>':'')+openStr(s.opening_hours)+'</div>'
+        +'<div class="src-acts">'
+          +'<a href="https://www.google.com/maps/place/?q=place_id:'+s.place_id+'" target="_blank" rel="noopener" class="src-btn src-btn-p">🗺️ Directions</a>'
+          +(s.formatted_phone_number?'<a href="tel:'+s.formatted_phone_number+'" class="src-btn src-btn-s">📞 Call Now</a>':'<a href="https://www.google.com/maps/place/?q=place_id:'+s.place_id+'" target="_blank" rel="noopener" class="src-btn src-btn-s">📋 Details</a>')
+        +'</div>'
+      +'</div>';
+    }).join('')+'</div></div>';
+  toast('Found '+shops.length+' shops near '+zip+'! ⛳');
+}
+
+// ═══════════════════════════════════════
+// SELL FORM
+// ═══════════════════════════════════════
+function renderSell(){
+  return '<div class="sform-wrap">'
+    +'<div class="sform-title">List Your Golf Cart</div>'
+    +'<p class="sform-sub">Reach thousands of buyers, traders, and renters across Florida and nationwide. Free listings for private parties. Premium placement available for dealers.</p>'
+    +'<div class="fcard"><div class="fcard-title">Listing Type</div>'
+    +'<div class="stabs" style="margin-bottom:0">'
+    +'<div class="stab on-sell" onclick="toast(\'Sell mode\')">💵 Sell</div>'
+    +'<div class="stab" onclick="toast(\'Trade mode\')">⇌ Trade</div>'
+    +'<div class="stab" onclick="toast(\'Rent mode\')">🚗 Rent / Rent to Own</div>'
+    +'</div></div>'
+    +'<div class="fcard"><div class="fcard-title">Cart Details</div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Brand *</label><select class="fip"><option value="">Select</option><option>Club Car</option><option>EZ-GO</option><option>Yamaha</option><option>Polaris</option><option>ICON</option><option>Bintelli</option><option>Other</option></select></div>'
+    +'<div class="fg"><label class="fl">Model *</label><input class="fip" type="text" placeholder="e.g. Onward 4, RXV Elite"></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Year *</label><input class="fip" type="number" placeholder="e.g. 2022" min="1990" max="2025"></div>'
+    +'<div class="fg"><label class="fl">Asking Price *</label><input class="fip" type="number" placeholder="$0.00"></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Motor Type</label><select class="fip"><option>Electric</option><option>Gas</option><option>Hybrid</option></select></div>'
+    +'<div class="fg"><label class="fl">Battery</label><select class="fip"><option>Lithium</option><option>Lead Acid</option><option>N/A</option></select></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Condition *</label><select class="fip"><option>New</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Parts Only</option></select></div>'
+    +'<div class="fg"><label class="fl">Seats</label><select class="fip"><option>2</option><option>4</option><option>6</option></select></div></div>'
+    +'<div class="fg"><label class="fl">Miles / Hours</label><input class="fip" type="number" placeholder="Current odometer or hours"></div>'
+    +'<div class="fg"><label class="fl">Color</label><input class="fip" type="text" placeholder="e.g. Midnight Black, Pearl White, Custom..."></div>'
+    +'<div class="fg"><label class="fl">Features / Mods (one per line)</label><textarea class="fip" placeholder="Lifted 4 inch&#10;LED Light Bar&#10;Custom Wheels&#10;Sound System"></textarea></div>'
+    +'</div>'
+    +'<div class="fcard"><div class="fcard-title">Location and Contact</div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">City *</label><input class="fip" type="text" placeholder="City"></div>'
+    +'<div class="fg"><label class="fl">State *</label><select class="fip"><option>FL</option><option>GA</option><option>TX</option><option>CA</option><option>NC</option><option>SC</option><option>Other</option></select></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Your Name *</label><input class="fip" type="text" placeholder="First name or business name"></div>'
+    +'<div class="fg"><label class="fl">Seller Type</label><select class="fip"><option>Private Party</option><option>Dealer</option><option>Online Dealer</option></select></div></div>'
+    +'<div class="frow2"><div class="fg"><label class="fl">Email *</label><input class="fip" type="email" placeholder="your@email.com"></div>'
+    +'<div class="fg"><label class="fl">Phone</label><input class="fip" type="tel" placeholder="(___) ___-____"></div></div>'
+    +'</div>'
+    +'<div class="fcard"><div class="fcard-title">Photos</div>'
+    +'<div class="upload-z" onclick="toast(\'Photo upload ready!\')"><div class="upload-ico">📸</div><div class="upload-txt">Click to upload photos</div><div class="upload-hint">JPG, PNG, HEIC · Up to 20 photos · Max 10MB each</div></div>'
+    +'</div>'
+    +'<div class="fcard"><div class="fcard-title">Also List On These Sites</div>'
+    +'<p style="font-size:12px;color:var(--txt2);margin-bottom:.9rem;line-height:1.6">Maximize your reach by also listing on these golf cart marketplaces:</p>'
+    +'<div class="live-grid">'
+    +'<a href="https://www.golfcarttrader.com" target="_blank" rel="noopener" class="live-card" style="border-left-color:var(--lime)"><div class="lc-ico" style="background:var(--limedim)">🛻</div><div><div class="lc-name">Golf Cart Trader</div><div class="lc-desc">#1 dedicated golf cart marketplace</div></div><div class="lc-arrow">→</div></a>'
+    +'<a href="https://www.facebook.com/marketplace" target="_blank" rel="noopener" class="live-card" style="border-left-color:#1877f2"><div class="lc-ico" style="background:rgba(24,119,242,.1)">📘</div><div><div class="lc-name">Facebook Marketplace</div><div class="lc-desc">Massive local audience · Free</div></div><div class="lc-arrow" style="color:#1877f2">→</div></a>'
+    +'<a href="https://www.ebay.com/sell" target="_blank" rel="noopener" class="live-card" style="border-left-color:#e53238"><div class="lc-ico" style="background:rgba(229,50,56,.1)">🔵</div><div><div class="lc-name">eBay Motors</div><div class="lc-desc">Nationwide reach · Auctions & Buy It Now</div></div><div class="lc-arrow" style="color:#e53238">→</div></a>'
+    +'<a href="https://www.craigslist.org" target="_blank" rel="noopener" class="live-card" style="border-left-color:#800000"><div class="lc-ico" style="background:rgba(128,0,0,.1)">📋</div><div><div class="lc-name">Craigslist</div><div class="lc-desc">Free local listings · Quick sales</div></div><div class="lc-arrow" style="color:#800000">→</div></a>'
+    +'</div>'
+    +'</div>'
+    +'<button class="submit-btn" onclick="toast(\'Listing submitted! You will receive a confirmation email. ✓\')">🚀 Publish My Listing</button>'
+    +'</div>';
+}
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+function openCart(id){
+  var l=LISTINGS.find(function(x){return x.id===id;});if(!l)return;
+  var pStr=l.type==='rent'?fmt(l.price)+' / '+(l.rentUnit||'day'):fmt(l.price);
+  var ctaLbl={buy:'Contact Seller',sell:'Make an Offer',trade:'Propose a Trade',rent:'Reserve This Cart'}[l.type]||'Contact';
+  var h='<div class="m-hd"><div class="m-title">'+esc(l.year+' '+l.brand+' '+l.model)+'</div><div class="m-close" onclick="closeModal()">✕</div></div>'
+    +'<div class="m-body">'
+    +'<div class="m-img">'+esc(l.img)+'</div>'
+    +'<div class="m-price'+priceCls(l.type)+'">'+pStr+'</div>'
+    +'<div class="m-sgrid">'
+      +'<div class="m-spec"><div class="m-slbl">Condition</div><div class="m-sval">'+esc(l.condition)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Motor</div><div class="m-sval">'+esc(l.motor)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Battery</div><div class="m-sval">'+esc(l.battery)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Seats</div><div class="m-sval">'+l.seats+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Top Speed</div><div class="m-sval">'+l.topSpeed+' MPH</div></div>'
+      +(l.range?'<div class="m-spec"><div class="m-slbl">Range</div><div class="m-sval">'+l.range+' mi</div></div>':'')
+      +(l.miles!=null?'<div class="m-spec"><div class="m-slbl">Miles</div><div class="m-sval">'+l.miles.toLocaleString()+'</div></div>':'')
+      +'<div class="m-spec"><div class="m-slbl">Color</div><div class="m-sval">'+esc(l.color)+'</div></div>'
+    +'</div>'
+    +'<div class="m-stitle">Features and Mods</div>'
+    +'<div class="m-feats">'+l.features.map(function(f){return'<span class="m-ft">'+esc(f)+'</span>';}).join('')+'</div>'
+    +'<div class="m-stitle">Seller</div>'
+    +'<p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">'+esc(l.seller)+' · 📍 '+esc(l.loc)+'</p>'
+    +'<div class="m-contact"><div class="m-stitle" style="margin-top:0">Send a Message</div>'
+    +'<div class="m-fg"><label class="m-fl">Your Name</label><input class="m-fi" type="text" placeholder="Your name"></div>'
+    +'<div class="m-fg"><label class="m-fl">Email</label><input class="m-fi" type="email" placeholder="your@email.com"></div>'
+    +'<div class="m-fg"><label class="m-fl">Phone (optional)</label><input class="m-fi" type="tel" placeholder="(___) ___-____"></div>'
+    +'<div class="m-fg"><label class="m-fl">Message</label><textarea class="m-fi" rows="3" placeholder="Hi, I\'m interested in your cart..."></textarea></div></div>'
+    +'<button class="m-cta" onclick="toast(\'Message sent to '+esc(l.seller)+' ✓\')">'+ctaLbl+'</button>'
+    +'<button class="m-cta2" onclick="toast(\'Added to saved ✓\')">♡ Save Listing</button>'
+    +'</div>';
+  document.getElementById('mContent').innerHTML=h;
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function openPart(id){
+  var p=PARTS.find(function(x){return x.id===id;});if(!p)return;
+  var h='<div class="m-hd"><div class="m-title">'+esc(p.name)+'</div><div class="m-close" onclick="closeModal()">✕</div></div>'
+    +'<div class="m-body">'
+    +'<div class="m-img" style="font-size:60px">'+esc(p.img)+'</div>'
+    +'<div class="m-price" style="color:var(--org)">$'+p.price.toLocaleString()+'</div>'
+    +'<div class="m-sgrid">'
+      +'<div class="m-spec"><div class="m-slbl">Brand</div><div class="m-sval">'+esc(p.brand)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Category</div><div class="m-sval">'+esc(p.cat)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Condition</div><div class="m-sval">New</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Rating</div><div class="m-sval">'+p.rating+' ★ ('+p.reviews+')</div></div>'
+    +'</div>'
+    +'<div class="m-stitle">Compatibility</div><p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">'+esc(p.compat)+'</p>'
+    +'<div class="m-stitle">Fits</div><div class="m-feats">'+p.fits.map(function(f){return'<span class="m-ft">'+esc(f)+'</span>';}).join('')+'</div>'
+    +'<div class="m-stitle">Seller</div><p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">'+esc(p.seller)+' · '+esc(p.loc)+'</p>'
+    +'<button class="m-cta" style="background:var(--org)" onclick="toast(\'Added to cart ✓\')">🛒 Add to Cart — $'+p.price.toLocaleString()+'</button>'
+    +'<button class="m-cta2" onclick="toast(\'Part saved ✓\')">Save Part</button>'
+    +'</div>';
+  document.getElementById('mContent').innerHTML=h;
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function openEvent(id){
+  var e=EVENTS.find(function(x){return x.id===id;});if(!e)return;
+  var d=fmtDate(e.date);
+  var h='<div class="m-hd"><div class="m-title">'+esc(e.name)+'</div><div class="m-close" onclick="closeModal()">✕</div></div>'
+    +'<div class="m-body">'
+    +'<div class="m-img" style="font-size:60px">'+esc(e.img)+'</div>'
+    +'<div class="m-sgrid">'
+      +'<div class="m-spec"><div class="m-slbl">Date</div><div class="m-sval">'+d.mo+' '+d.dy+', '+d.yr+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Type</div><div class="m-sval">'+esc(e.type)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">City, State</div><div class="m-sval">'+esc(e.city)+', '+esc(e.state)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Venue</div><div class="m-sval">'+esc(e.venue)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Attending</div><div class="m-sval">'+e.attending+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Entry Fee</div><div class="m-sval">'+(e.registrationFee===0?'Free':'$'+e.registrationFee)+'</div></div>'
+    +'</div>'
+    +'<div class="m-stitle">About This Event</div><p style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:1rem">'+esc(e.desc)+'</p>'
+    +'<div class="m-stitle">Organizer</div><p style="font-size:13px;color:var(--txt2);margin-bottom:1rem">'+esc(e.organizer)+' · '+e.website+'</p>'
+    +'<button class="m-cta" style="background:var(--blu)" onclick="toast(\'Registered ✓\')">Register Now</button>'
+    +'<button class="m-cta2" onclick="toast(\'Event saved ✓\')">Add to Calendar</button>'
+    +'</div>';
+  document.getElementById('mContent').innerHTML=h;
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function openShop(id){
+  var s=SHOPS.find(function(x){return x.id===id;});if(!s)return;
+  var h='<div class="m-hd"><div class="m-title">'+esc(s.name)+'</div><div class="m-close" onclick="closeModal()">✕</div></div>'
+    +'<div class="m-body">'
+    +'<div class="m-img" style="font-size:60px">'+esc(s.img)+'</div>'
+    +'<div class="m-sgrid">'
+      +'<div class="m-spec"><div class="m-slbl">Type</div><div class="m-sval">'+esc(s.type)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Location</div><div class="m-sval">'+esc(s.city)+', '+esc(s.state)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Rating</div><div class="m-sval">'+s.rating+' ★ ('+s.reviews+')</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Turnaround</div><div class="m-sval">'+esc(s.turnaround)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">Phone</div><div class="m-sval">'+esc(s.phone)+'</div></div>'
+      +'<div class="m-spec"><div class="m-slbl">ZIP</div><div class="m-sval">'+esc(s.zip)+'</div></div>'
+    +'</div>'
+    +'<div class="m-stitle">About</div><p style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:1rem">'+esc(s.desc)+'</p>'
+    +'<div class="m-stitle">All Services</div><div class="m-feats" style="margin-bottom:1rem">'+s.services.map(function(sv){return'<span class="m-ft">'+esc(sv)+'</span>';}).join('')+'</div>'
+    +'<div class="m-stitle">Brands Worked On</div><div class="m-feats" style="margin-bottom:1rem">'+s.brands.map(function(b){return'<span class="m-ft">'+esc(b)+'</span>';}).join('')+'</div>'
+    +'<div class="m-contact"><div class="m-stitle" style="margin-top:0">Request a Quote</div>'
+    +'<div class="m-fg"><label class="m-fl">Your Name</label><input class="m-fi" type="text" placeholder="Your name"></div>'
+    +'<div class="m-fg"><label class="m-fl">Phone</label><input class="m-fi" type="tel" placeholder="(___) ___-____"></div>'
+    +'<div class="m-fg"><label class="m-fl">Service Needed</label><input class="m-fi" type="text" placeholder="e.g. Lift kit install, lithium conversion..."></div>'
+    +'<div class="m-fg"><label class="m-fl">Your Cart</label><input class="m-fi" type="text" placeholder="Year, Brand, Model"></div></div>'
+    +'<button class="m-cta" style="background:var(--pur)" onclick="toast(\'Quote request sent to '+esc(s.name)+' ✓\')">Request Quote</button>'
+    +'<button class="m-cta2" onclick="toast(\'Shop saved ✓\')">Save Shop</button>'
+    +'</div>';
+  document.getElementById('mContent').innerHTML=h;
+  document.getElementById('mOverlay').classList.add('open');
+}
+
+function closeModal(){document.getElementById('mOverlay').classList.remove('open');}
+function closeModalOverlay(e){if(e.target===document.getElementById('mOverlay'))closeModal();}
+function favIt(el){el.textContent=el.textContent==='♡'?'♥':'♡';if(el.textContent==='♥'){el.style.color='var(--pnk)';toast('Added to favorites ♥');}else{el.style.color='';}}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded',function(){
+  switchTab('marketplace');
+});
+</script>
+</body>
+</html>
