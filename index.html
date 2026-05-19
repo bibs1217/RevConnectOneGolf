@@ -1102,7 +1102,9 @@ function renderSell(){
     +'<div class="fg"><label class="fl">Phone</label><input class="fip" type="tel" placeholder="(___) ___-____"></div></div>'
     +'</div>'
     +'<div class="fcard"><div class="fcard-title">Photos</div>'
-    +'<div class="upload-z" onclick="toast(\'Photo upload ready!\')"><div class="upload-ico">📸</div><div class="upload-txt">Click to upload photos</div><div class="upload-hint">JPG, PNG, HEIC · Up to 20 photos · Max 10MB each</div></div>'
+    +'<input type="file" id="cart-photo-input" accept="image/*" multiple style="display:none" onchange="handleCartPhotos(this)">'
+    +'<div class="upload-z" onclick="document.getElementById(\'cart-photo-input\').click()" id="upload-zone"><div class="upload-ico">📸</div><div class="upload-txt">Click to upload photos</div><div class="upload-hint">JPG, PNG, HEIC · Up to 20 photos · Max 10MB each</div></div>'
+    +'<div id="photo-preview" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem"></div>'
     +'</div>'
     +'<div class="fcard"><div class="fcard-title">Also List On These Sites</div>'
     +'<p style="font-size:12px;color:var(--txt2);margin-bottom:.9rem;line-height:1.6">Maximize your reach by also listing on these golf cart marketplaces:</p>'
@@ -1113,7 +1115,7 @@ function renderSell(){
     +'<a href="https://www.craigslist.org" target="_blank" rel="noopener" class="live-card" style="border-left-color:#800000"><div class="lc-ico" style="background:rgba(128,0,0,.1)">📋</div><div><div class="lc-name">Craigslist</div><div class="lc-desc">Free local listings · Quick sales</div></div><div class="lc-arrow" style="color:#800000">→</div></a>'
     +'</div>'
     +'</div>'
-    +'<button class="submit-btn" onclick="toast(\'Listing submitted! You will receive a confirmation email. ✓\')">🚀 Publish My Listing</button>'
+    +'<button class="submit-btn" onclick="submitListing()">🚀 Publish My Listing</button>'
     +'</div>';
 }
 
@@ -1230,6 +1232,87 @@ function openShop(id){
 function closeModal(){document.getElementById('mOverlay').classList.remove('open');}
 function closeModalOverlay(e){if(e.target===document.getElementById('mOverlay'))closeModal();}
 function favIt(el){el.textContent=el.textContent==='♡'?'♥':'♡';if(el.textContent==='♥'){el.style.color='var(--pnk)';toast('Added to favorites ♥');}else{el.style.color='';}}
+
+function submitListing() {
+  var photoCount = uploadedPhotos.length;
+  if (photoCount === 0) {
+    toast('Add at least one photo before submitting!');
+    return;
+  }
+  toast('Listing submitted with ' + photoCount + ' photo(s)! You will receive a confirmation email. ✓');
+  uploadedPhotos = [];
+  setTimeout(function(){ switchTab('marketplace'); }, 2000);
+}
+
+// ═══════════════════════════════════════
+// PHOTO UPLOAD & PREVIEW
+// ═══════════════════════════════════════
+var uploadedPhotos = [];
+
+function handleCartPhotos(input) {
+  var files = Array.from(input.files);
+  if (!files.length) return;
+
+  // Limit to 20 photos
+  var remaining = 20 - uploadedPhotos.length;
+  if (remaining <= 0) { toast('Max 20 photos reached.'); return; }
+  files = files.slice(0, remaining);
+
+  var oversized = files.filter(function(f){ return f.size > 10 * 1024 * 1024; });
+  if (oversized.length) {
+    toast(oversized.length + ' photo(s) exceed 10MB and were skipped.');
+    files = files.filter(function(f){ return f.size <= 10 * 1024 * 1024; });
+  }
+
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedPhotos.push({ name: file.name, dataUrl: e.target.result });
+      renderPhotoPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Update upload zone text
+  toast(files.length + ' photo(s) added ✓');
+}
+
+function renderPhotoPreview() {
+  var preview = document.getElementById('photo-preview');
+  var zone = document.getElementById('upload-zone');
+  if (!preview) return;
+
+  if (uploadedPhotos.length > 0) {
+    zone.innerHTML = '<div class="upload-ico">📸</div>'
+      + '<div class="upload-txt">Add more photos (' + uploadedPhotos.length + '/20)</div>'
+      + '<div class="upload-hint">Click to add more · JPG, PNG, HEIC · Max 10MB each</div>';
+  }
+
+  preview.innerHTML = uploadedPhotos.map(function(p, i) {
+    return '<div style="position:relative;width:100px;height:80px;flex-shrink:0">'
+      + '<img src="' + p.dataUrl + '" style="width:100px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--bd2)">'
+      + (i === 0 ? '<div style="position:absolute;bottom:4px;left:4px;background:var(--lime);color:var(--blk);font-size:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:800;padding:1px 5px;border-radius:3px">MAIN</div>' : '')
+      + '<div onclick="removePhoto(' + i + ')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:1px solid var(--bd);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;color:#fff">✕</div>'
+      + '</div>';
+  }).join('');
+}
+
+function removePhoto(i) {
+  uploadedPhotos.splice(i, 1);
+  renderPhotoPreview();
+  if (uploadedPhotos.length === 0) {
+    var zone = document.getElementById('upload-zone');
+    if (zone) zone.innerHTML = '<div class="upload-ico">📸</div><div class="upload-txt">Click to upload photos</div><div class="upload-hint">JPG, PNG, HEIC · Up to 20 photos · Max 10MB each</div>';
+  }
+  toast('Photo removed.');
+}
+
+// Reset photos when switching tabs
+var _origSwitchTab = switchTab;
+switchTab = function(t) {
+  if (t !== 'sell') uploadedPhotos = [];
+  _origSwitchTab(t);
+};
 
 // ═══════════════════════════════════════
 // INIT
