@@ -455,6 +455,7 @@ function fv(id){var e=document.getElementById(id);return e?e.value:'';}
 // NAV
 // ═══════════════════════════════════════
 function switchTab(t){
+  if(t!=='sell') uploadedPhotos=[];
   S.tab=t;S.q=document.getElementById('gsearch')?document.getElementById('gsearch').value:'';
   document.querySelectorAll('.tb').forEach(function(el){el.classList.remove('on');});
   var el=document.getElementById('tb-'+t);if(el)el.classList.add('on');
@@ -1307,12 +1308,8 @@ function removePhoto(i) {
   toast('Photo removed.');
 }
 
-// Reset photos when switching tabs
-var _origSwitchTab = switchTab;
-switchTab = function(t) {
-  if (t !== 'sell') uploadedPhotos = [];
-  _origSwitchTab(t);
-};
+// Reset photos when navigating away from sell tab handled inside switchTab directly
+
 
 // ═══════════════════════════════════════
 // INIT
