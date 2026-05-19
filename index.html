@@ -365,7 +365,7 @@ textarea.m-fi{resize:vertical;min-height:72px}
     </div>
     <div class="hd-srch">
       <span class="hd-srch-ico">&#128269;</span>
-      <input id="gsearch" type="text" placeholder="Search carts, parts, events, shops..." oninput="onSearch()">
+      <input id="gsearch" type="text" placeholder="Search carts, parts, events, shops..." oninput="onSearch()" onkeydown="if(event.key==='Enter'){event.preventDefault();onSearch();}">
     </div>
     <nav class="hd-tabs">
       <button id="ht-marketplace" class="hd-tab on" onclick="switchTab('marketplace')">Marketplace</button>
@@ -636,14 +636,10 @@ function doFilter(){
   }
   // Clean out empty strings
   Object.keys(S.flt).forEach(function(k){if(!S.flt[k])delete S.flt[k];});
-  // DEBUG — show what filters are active
+  var matches=filteredListings();
   var activeKeys=Object.keys(S.flt);
-  if(activeKeys.length){
-    toast('Filters: '+activeKeys.map(function(k){return k+'='+S.flt[k];}).join(', '));
-  } else {
-    toast('No filters set — showing all');
-  }
-  console.log('S.flt=',JSON.stringify(S.flt),'S.sub=',S.sub,'LISTINGS count=',LISTINGS.length);
+  toast((activeKeys.length?'Filters: '+activeKeys.map(function(k){return k+'='+S.flt[k];}).join(', '):'No filters')+' → '+matches.length+' results');
+  console.log('S.flt=',JSON.stringify(S.flt),'S.sub=',S.sub,'matches=',matches.length);
   renderMain();
 }
 
@@ -772,18 +768,23 @@ function renderSidebar(){
 // ═══════════════════════════════════════
 function filteredListings(){
   var f=S.flt,q=S.q.toLowerCase(),sub=S.sub;
+  var hasFilters=Object.keys(f).length>0;
   return LISTINGS.filter(function(l){
-    // If there's a search query, search across ALL types not just the current sub-tab
-    if(!q && l.type!==sub) return false;
-    if(f.brand && f.brand!=='' && l.brand!==f.brand) return false;
-    if(f.motor && f.motor!=='' && l.motor!==f.motor) return false;
-    if(f.battery && f.battery!=='' && l.battery!==f.battery) return false;
-    if(f.seats && f.seats!=='' && String(l.seats)!==String(f.seats)) return false;
-    if(f.condition && f.condition!=='' && l.condition!==f.condition) return false;
-    if(f.seller && f.seller!=='' && l.cat!==f.seller) return false;
-    if(f.minP && f.minP!=='' && l.price<parseInt(f.minP)) return false;
-    if(f.maxP && f.maxP!=='' && l.price>parseInt(f.maxP)) return false;
-    if(f.loc && f.loc!=='' && l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
+    // Only filter by sub-type if no other filters active and no search
+    if(!hasFilters && !q && l.type!==sub) return false;
+    // If filters active but no sub restriction — still limit to buy/sell/trade/rent types
+    if(l.type!=='buy'&&l.type!=='sell'&&l.type!=='trade'&&l.type!=='rent') return false;
+    // When filters active, search across all listing types unless sub is specifically chosen
+    if(!hasFilters && !q && l.type!==sub) return false;
+    if(f.brand     && l.brand!==f.brand) return false;
+    if(f.motor     && l.motor!==f.motor) return false;
+    if(f.battery   && l.battery!==f.battery) return false;
+    if(f.seats     && String(l.seats)!==String(f.seats)) return false;
+    if(f.condition && l.condition!==f.condition) return false;
+    if(f.seller    && l.cat!==f.seller) return false;
+    if(f.minP      && l.price<parseInt(f.minP)) return false;
+    if(f.maxP      && l.price>parseInt(f.maxP)) return false;
+    if(f.loc       && l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
     if(q){
       var h=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+l.type+' '+(l.features||[]).join(' ')).toLowerCase();
       if(h.indexOf(q)<0) return false;
