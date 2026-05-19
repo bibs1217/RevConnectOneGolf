@@ -884,91 +884,140 @@ function priceCls(type){return type==='buy'?'':' p-'+type;}
 // ═══════════════════════════════════════
 function renderMarket(){
   var items=filteredListings();
+  var f=S.flt;
   var h='';
 
-  // Live multi-site search panel
-  h+='<div class="search-panel" style="margin-bottom:1.4rem">';
-  h+='<div class="sp-label">🔍 Search All Golf Cart Sites Simultaneously</div>';
+  // Live search panel
+  h+='<div class="search-panel" style="margin-bottom:1rem">';
+  h+='<div class="sp-label">\uD83D\uDD0D Search All Golf Cart Sites Simultaneously</div>';
   h+='<div class="sp-row">';
   h+='<input class="sp-inp" id="mkt-live-inp" placeholder="e.g. Club Car Onward 4 passenger lifted...">';
-  h+='<select class="sp-sel" id="mkt-live-cond"><option value="">Any Condition</option><option value="new">New</option><option value="used">Used</option></select>';
-  h+='<button class="sp-btn" id="mkt-live-btn">🔍 Search All Sites</button>';
+  h+='<button class="sp-btn" id="mkt-live-btn">\uD83D\uDD0D Search All Sites</button>';
   h+='</div>';
-  h+='<div class="sp-hint">Opens Golf Cart Trader, eBay Motors, Facebook Marketplace, Craigslist & more — all pre-filtered to your search</div>';
+  h+='<div class="sp-hint">Opens Golf Cart Trader, eBay Motors, Facebook Marketplace, Craigslist & more</div>';
   h+='<div id="mkt-live-results"></div>';
   h+='</div>';
 
-  // Active filters badge display
-  var af=[];
-  if(S.flt.brand)af.push('Brand: '+S.flt.brand);
-  if(S.flt.motor)af.push(S.flt.motor);
-  if(S.flt.battery)af.push(S.flt.battery);
-  if(S.flt.seats)af.push(S.flt.seats+' Seat');
-  if(S.flt.condition)af.push(S.flt.condition);
-  if(S.flt.seller)af.push(S.flt.seller.charAt(0).toUpperCase()+S.flt.seller.slice(1));
-  if(S.flt.minP)af.push('$'+S.flt.minP+'+');
-  if(S.flt.maxP)af.push('Under $'+S.flt.maxP);
-  if(S.flt.loc)af.push('📍 '+S.flt.loc);
-  if(S.q)af.push('"'+S.q+'"');
+  // Inline filter panel - always in DOM, always works
+  h+='<div style="background:var(--dk2);border:1px solid var(--bd2);border-top:3px solid var(--lime);border-radius:var(--rad2);padding:1rem;margin-bottom:1rem">';
+  h+='<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--lime);margin-bottom:.7rem">Filter Listings</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.5rem;margin-bottom:.7rem">';
+
+  var selStyle='width:100%;background:var(--dk3);border:1px solid var(--bd);border-radius:var(--rad);padding:6px 8px;font-size:12px;color:var(--txt);font-family:\'Barlow\',sans-serif;outline:none';
+  var inpStyle=selStyle;
+
+  // Brand
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Brand</div>';
+  h+='<select id="inf-brand" style="'+selStyle+'">';
+  h+='<option value="">Any Brand</option>';
+  ['Club Car','EZ-GO','Yamaha','Polaris','ICON','Bintelli'].forEach(function(v){h+='<option value="'+v+'"'+(f.brand===v?' selected':'')+'>'+v+'</option>';});
+  h+='</select></div>';
+
+  // Motor
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Motor</div>';
+  h+='<select id="inf-motor" style="'+selStyle+'">';
+  h+='<option value="">Any Motor</option>';
+  ['Electric','Gas'].forEach(function(v){h+='<option value="'+v+'"'+(f.motor===v?' selected':'')+'>'+v+'</option>';});
+  h+='</select></div>';
+
+  // Battery
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Battery</div>';
+  h+='<select id="inf-battery" style="'+selStyle+'">';
+  h+='<option value="">Any Battery</option>';
+  ['Lithium','Lead Acid'].forEach(function(v){h+='<option value="'+v+'"'+(f.battery===v?' selected':'')+'>'+v+'</option>';});
+  h+='</select></div>';
+
+  // Seats
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Seats</div>';
+  h+='<select id="inf-seats" style="'+selStyle+'">';
+  h+='<option value="">Any Seats</option>';
+  ['2','4','6'].forEach(function(v){h+='<option value="'+v+'"'+(f.seats===v?' selected':'')+'>'+v+' Seat</option>';});
+  h+='</select></div>';
+
+  // Condition
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Condition</div>';
+  h+='<select id="inf-condition" style="'+selStyle+'">';
+  h+='<option value="">Any</option>';
+  ['New','Excellent','Used','Good'].forEach(function(v){h+='<option value="'+v+'"'+(f.condition===v?' selected':'')+'>'+v+'</option>';});
+  h+='</select></div>';
+
+  // Seller
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Seller</div>';
+  h+='<select id="inf-seller" style="'+selStyle+'">';
+  h+='<option value="">Any Seller</option>';
+  [['dealer','Dealer'],['private','Private'],['online','Online']].forEach(function(x){h+='<option value="'+x[0]+'"'+(f.seller===x[0]?' selected':'')+'>'+x[1]+'</option>';});
+  h+='</select></div>';
+
+  // Min Price
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Min $</div>';
+  h+='<input id="inf-minp" type="number" placeholder="0" value="'+(f.minP||'')+'" style="'+inpStyle+'"></div>';
+
+  // Max Price
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Max $</div>';
+  h+='<input id="inf-maxp" type="number" placeholder="No max" value="'+(f.maxP||'')+'" style="'+inpStyle+'"></div>';
+
+  // Location
+  h+='<div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:3px">Location</div>';
+  h+='<input id="inf-loc" type="text" placeholder="City or ZIP" value="'+(f.loc||'')+'" style="'+inpStyle+'"></div>';
+
+  h+='</div>';
+  h+='<div style="display:flex;gap:.5rem">';
+  h+='<button onclick="applyInlineFilters()" style="flex:1;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad);padding:9px;font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;cursor:pointer">\u2713 Apply Filters</button>';
+  h+='<button onclick="clearAll()" style="background:var(--dk4);color:var(--txt2);border:1px solid var(--bd2);border-radius:var(--rad);padding:9px 16px;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer">Clear</button>';
+  h+='</div>';
+  h+='</div>';
+
+  // Active filter badges
+  var af=Object.keys(S.flt);
   if(af.length){
-    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem;align-items:center">';
-    h+='<span style="font-size:10px;color:var(--txt3);font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:.2rem">Filters:</span>';
-    af.forEach(function(f){h+='<span style="background:var(--limedim);border:1px solid rgba(184,242,65,.4);border-radius:20px;padding:2px 9px;font-size:10px;color:var(--lime);font-family:\'Barlow Condensed\',sans-serif;font-weight:700">'+f+'</span>';});
-    h+='<span onclick="clearAll()" style="font-size:10px;color:var(--pnk);cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;margin-left:.3rem">✕ Clear</span>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.7rem;align-items:center">';
+    h+='<span style="font-size:10px;color:var(--txt3);font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase">Filters:</span>';
+    af.forEach(function(k){h+='<span style="background:var(--limedim);border:1px solid rgba(184,242,65,.4);border-radius:20px;padding:2px 9px;font-size:10px;color:var(--lime);font-family:\'Barlow Condensed\',sans-serif;font-weight:700">'+k+': '+S.flt[k]+'</span>';});
     h+='</div>';
   }
 
   // Sub-tabs
   h+='<div class="stabs">';
-  [['buy','🛒 Buy'],['sell','💵 Sell'],['trade','⇌ Trade'],['rent','🚗 Rent']].forEach(function(x){
+  [['buy','\uD83D\uDED2 Buy'],['sell','\uD83D\uDCB5 Sell'],['trade','\u21C4 Trade'],['rent','\uD83D\uDE97 Rent']].forEach(function(x){
     h+='<div id="st-'+x[0]+'" class="stab'+(S.sub===x[0]?' on-'+x[0]:'')+'" onclick="setSub(\''+x[0]+'\')">'+x[1]+'</div>';
   });
   h+='</div>';
 
   h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> listing'+(items.length!==1?'s':'')+' found</span>';
-  h+='<select class="sort-sel" onchange="sortListings(this.value)"><option value="">Sort</option><option value="price_asc">Price: Low→High</option><option value="price_desc">Price: High→Low</option></select></div>';
+  h+='<select class="sort-sel" onchange="sortListings(this.value)"><option value="">Sort</option><option value="price_asc">Price: Low\u2192High</option><option value="price_desc">Price: High\u2192Low</option></select></div>';
 
   if(!items.length){
-    h+='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No Listings Match</div>'
-    +'<div class="empty-s">Try clearing some filters, or use the search bar above to find carts from dealers and private sellers nationwide.</div>'
-    +'<button onclick="clearAll()" style="margin-top:1rem;padding:8px 20px;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer">Clear All Filters</button>'
-    +'</div>';
+    h+='<div class="empty"><div class="empty-ico">\uD83D\uDD0D</div><div class="empty-t">No Listings Match</div>';
+    h+='<div class="empty-s">Adjust your filters above or use the search to find carts from dealers and private sellers nationwide.</div>';
+    h+='<button onclick="clearAll()" style="margin-top:1rem;padding:8px 20px;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer">Clear All Filters</button>';
+    h+='</div>';
   } else {
     h+='<div class="grid">';
     items.forEach(function(l){
       var pStr=l.type==='rent'?fmt(l.price)+'<span class="pu"> / '+(l.rentUnit||'day')+'</span>':fmt(l.price);
-      var imgContent=l.imageUrl
-        ?'<img src="'+l.imageUrl+'" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">'
-        :esc(l.img);
-      h+='<div class="card" onclick="openCart(\''+l.id+'\')">'
-        +'<div class="card-img" style="'+(l.imageUrl?'padding:0;overflow:hidden':'')+'">'+imgContent
-          +'<div class="card-badge '+bdgCls(l.badge)+'">'+esc(l.badge)+'</div>'
-          +'<div class="card-fav" onclick="event.stopPropagation();favIt(this)">♡</div>'
-          +(l.isLive?'<div style="position:absolute;bottom:8px;left:8px;background:var(--ok);color:#fff;font-size:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.3px">LIVE</div>':'')
-        +'</div>'
-        +'<div class="card-body">'
-          +'<div class="card-yb">'+l.year+' · '+esc(l.brand)+'</div>'
-          +'<div class="card-model">'+esc(l.model)+'</div>'
-          +'<div class="card-price'+priceCls(l.type)+'">'+pStr+'</div>'
-          +'<div class="specs">'
-            +(l.motor?'<span class="sp">'+esc(l.motor)+'</span>':'')
-            +(l.seats?'<span class="sp">'+l.seats+' Seat</span>':'')
-            +(l.topSpeed?'<span class="sp">'+l.topSpeed+' mph</span>':'')
-            +(l.range?'<span class="sp">'+l.range+' mi</span>':'')
-          +'</div>'
-          +'<div class="feats">'+((l.features||[]).slice(0,3).map(function(f){return'<span class="ft">'+esc(f)+'</span>';})).join('')+'</div>'
-          +'<div class="card-seller">'+esc(l.seller)+' · '+esc(l.condition)+'</div>'
-          +'<div class="card-loc">📍 '+esc(l.loc)+'</div>'
-        +'</div>'
-        +'<div class="card-acts">'
-          +'<button class="cbtn cbtn-p" onclick="event.stopPropagation();openCart(\''+l.id+'\')">View Details</button>'
-          +'<button class="cbtn cbtn-g" onclick="event.stopPropagation();toast(\'Saved ✓\')">Save</button>'
-        +'</div>'
-      +'</div>';
+      var imgContent=l.imageUrl?'<img src="'+l.imageUrl+'" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">':esc(l.img);
+      h+='<div class="card" onclick="openCart(\''+l.id+'\')"><div class="card-img" style="'+(l.imageUrl?'padding:0;overflow:hidden':'')+'">'+imgContent+'<div class="card-badge '+bdgCls(l.badge)+'">'+esc(l.badge)+'</div><div class="card-fav" onclick="event.stopPropagation();favIt(this)">&hearts;</div>'+(l.isLive?'<div style="position:absolute;bottom:8px;left:8px;background:var(--ok);color:#fff;font-size:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;padding:2px 6px;border-radius:3px">LIVE</div>':'')+'</div><div class="card-body"><div class="card-yb">'+l.year+' &middot; '+esc(l.brand)+'</div><div class="card-model">'+esc(l.model)+'</div><div class="card-price'+priceCls(l.type)+'">'+pStr+'</div><div class="specs">'+(l.motor?'<span class="sp">'+esc(l.motor)+'</span>':'')+(l.seats?'<span class="sp">'+l.seats+' Seat</span>':'')+(l.topSpeed?'<span class="sp">'+l.topSpeed+' mph</span>':'')+(l.range?'<span class="sp">'+l.range+' mi</span>':'')+'</div><div class="feats">'+((l.features||[]).slice(0,3).map(function(ft){return'<span class="ft">'+esc(ft)+'</span>';})).join('')+'</div><div class="card-seller">'+esc(l.seller)+' &middot; '+esc(l.condition)+'</div><div class="card-loc">&#128205; '+esc(l.loc)+'</div></div><div class="card-acts"><button class="cbtn cbtn-p" onclick="event.stopPropagation();openCart(\''+l.id+'\')">View Details</button><button class="cbtn cbtn-g" onclick="event.stopPropagation();toast(\'Saved &#10003;\')">Save</button></div></div>';
     });
     h+='</div>';
   }
   return h;
+}
+
+function applyInlineFilters(){
+  S.flt={};
+  var g=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};
+  var brand=g('inf-brand');     if(brand)    S.flt.brand=brand;
+  var motor=g('inf-motor');     if(motor)    S.flt.motor=motor;
+  var battery=g('inf-battery'); if(battery)  S.flt.battery=battery;
+  var seats=g('inf-seats');     if(seats)    S.flt.seats=seats;
+  var cond=g('inf-condition');  if(cond)     S.flt.condition=cond;
+  var seller=g('inf-seller');   if(seller)   S.flt.seller=seller;
+  var minp=g('inf-minp');       if(minp)     S.flt.minP=minp;
+  var maxp=g('inf-maxp');       if(maxp)     S.flt.maxP=maxp;
+  var loc=g('inf-loc');         if(loc)      S.flt.loc=loc;
+  var results=filteredListings();
+  toast(Object.keys(S.flt).length?'Found '+results.length+' carts':'Showing all '+results.length+' carts');
+  renderMain();
 }
 
 function sortListings(val){
@@ -976,6 +1025,7 @@ function sortListings(val){
   else if(val==='price_desc')LISTINGS.sort(function(a,b){return(b.price||0)-(a.price||0);});
   renderMain();
 }
+
 
 // ═══════════════════════════════════════
 // LIVE MARKETPLACE SEARCH
