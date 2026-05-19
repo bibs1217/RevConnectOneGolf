@@ -671,17 +671,21 @@ function renderSidebar(){
 function filteredListings(){
   var f=S.flt,q=S.q.toLowerCase(),sub=S.sub;
   return LISTINGS.filter(function(l){
-    if(l.type!==sub)return false;
-    if(f.brand&&l.brand!==f.brand)return false;
-    if(f.motor&&l.motor!==f.motor)return false;
-    if(f.battery&&l.battery!==f.battery)return false;
-    if(f.seats&&String(l.seats)!==f.seats)return false;
-    if(f.condition&&l.condition!==f.condition)return false;
-    if(f.seller&&l.cat!==f.seller)return false;
-    if(f.minP&&l.price<parseInt(f.minP))return false;
-    if(f.maxP&&l.price>parseInt(f.maxP))return false;
-    if(f.loc&&l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0)return false;
-    if(q){var h=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color).toLowerCase();if(h.indexOf(q)<0)return false;}
+    // If there's a search query, search across ALL types not just the current sub-tab
+    if(!q && l.type!==sub) return false;
+    if(f.brand && f.brand!=='' && l.brand!==f.brand) return false;
+    if(f.motor && f.motor!=='' && l.motor!==f.motor) return false;
+    if(f.battery && f.battery!=='' && l.battery!==f.battery) return false;
+    if(f.seats && f.seats!=='' && String(l.seats)!==String(f.seats)) return false;
+    if(f.condition && f.condition!=='' && l.condition!==f.condition) return false;
+    if(f.seller && f.seller!=='' && l.cat!==f.seller) return false;
+    if(f.minP && f.minP!=='' && l.price<parseInt(f.minP)) return false;
+    if(f.maxP && f.maxP!=='' && l.price>parseInt(f.maxP)) return false;
+    if(f.loc && f.loc!=='' && l.loc.toLowerCase().indexOf(f.loc.toLowerCase())<0) return false;
+    if(q){
+      var h=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+l.type+' '+(l.features||[]).join(' ')).toLowerCase();
+      if(h.indexOf(q)<0) return false;
+    }
     return true;
   });
 }
@@ -783,27 +787,57 @@ function renderMarket(){
   h+='<select class="sp-sel" id="mkt-live-cond"><option value="">Any Condition</option><option value="new">New</option><option value="used">Used</option></select>';
   h+='<button class="sp-btn" id="mkt-live-btn">🔍 Search All Sites</button>';
   h+='</div>';
-  h+='<div class="sp-hint">Opens CarGurus, eBay Motors, Facebook Marketplace, Golf Cart Trader & more with your search pre-filled</div>';
+  h+='<div class="sp-hint">Opens Golf Cart Trader, eBay Motors, Facebook Marketplace, Craigslist & more — all pre-filtered to your search</div>';
   h+='<div id="mkt-live-results"></div>';
   h+='</div>';
 
-  // Local listings
+  // Active filters badge display
+  var af=[];
+  if(S.flt.brand)af.push('Brand: '+S.flt.brand);
+  if(S.flt.motor)af.push(S.flt.motor);
+  if(S.flt.battery)af.push(S.flt.battery);
+  if(S.flt.seats)af.push(S.flt.seats+' Seat');
+  if(S.flt.condition)af.push(S.flt.condition);
+  if(S.flt.seller)af.push(S.flt.seller.charAt(0).toUpperCase()+S.flt.seller.slice(1));
+  if(S.flt.minP)af.push('$'+S.flt.minP+'+');
+  if(S.flt.maxP)af.push('Under $'+S.flt.maxP);
+  if(S.flt.loc)af.push('📍 '+S.flt.loc);
+  if(S.q)af.push('"'+S.q+'"');
+  if(af.length){
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem;align-items:center">';
+    h+='<span style="font-size:10px;color:var(--txt3);font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-right:.2rem">Filters:</span>';
+    af.forEach(function(f){h+='<span style="background:var(--limedim);border:1px solid rgba(184,242,65,.4);border-radius:20px;padding:2px 9px;font-size:10px;color:var(--lime);font-family:\'Barlow Condensed\',sans-serif;font-weight:700">'+f+'</span>';});
+    h+='<span onclick="clearAll()" style="font-size:10px;color:var(--pnk);cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;margin-left:.3rem">✕ Clear</span>';
+    h+='</div>';
+  }
+
+  // Sub-tabs
   h+='<div class="stabs">';
   [['buy','🛒 Buy'],['sell','💵 Sell'],['trade','⇌ Trade'],['rent','🚗 Rent']].forEach(function(x){
     h+='<div id="st-'+x[0]+'" class="stab'+(S.sub===x[0]?' on-'+x[0]:'')+'" onclick="setSub(\''+x[0]+'\')">'+x[1]+'</div>';
   });
   h+='</div>';
-  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> local listings</span>';
-  h+='<select class="sort-sel"><option>Featured</option><option>Price: Low→High</option><option>Price: High→Low</option></select></div>';
-  if(!items.length){h+='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No Listings Found</div><div class="empty-s">Adjust your filters or search all sites above.</div></div>';}
-  else{
+
+  h+='<div class="rh"><span class="rcount"><strong>'+items.length+'</strong> listing'+(items.length!==1?'s':'')+' found</span>';
+  h+='<select class="sort-sel" onchange="sortListings(this.value)"><option value="">Sort</option><option value="price_asc">Price: Low→High</option><option value="price_desc">Price: High→Low</option></select></div>';
+
+  if(!items.length){
+    h+='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No Listings Match</div>'
+    +'<div class="empty-s">Try clearing some filters, or use the search bar above to find carts from dealers and private sellers nationwide.</div>'
+    +'<button onclick="clearAll()" style="margin-top:1rem;padding:8px 20px;background:var(--lime);color:var(--blk);border:none;border-radius:var(--rad2);font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer">Clear All Filters</button>'
+    +'</div>';
+  } else {
     h+='<div class="grid">';
     items.forEach(function(l){
       var pStr=l.type==='rent'?fmt(l.price)+'<span class="pu"> / '+(l.rentUnit||'day')+'</span>':fmt(l.price);
-      h+='<div class="card" onclick="openCart('+l.id+')">'
-        +'<div class="card-img">'+esc(l.img)
+      var imgContent=l.imageUrl
+        ?'<img src="'+l.imageUrl+'" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'">'
+        :esc(l.img);
+      h+='<div class="card" onclick="openCart(\''+l.id+'\')">'
+        +'<div class="card-img" style="'+(l.imageUrl?'padding:0;overflow:hidden':'')+'">'+imgContent
           +'<div class="card-badge '+bdgCls(l.badge)+'">'+esc(l.badge)+'</div>'
           +'<div class="card-fav" onclick="event.stopPropagation();favIt(this)">♡</div>'
+          +(l.isLive?'<div style="position:absolute;bottom:8px;left:8px;background:var(--ok);color:#fff;font-size:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.3px">LIVE</div>':'')
         +'</div>'
         +'<div class="card-body">'
           +'<div class="card-yb">'+l.year+' · '+esc(l.brand)+'</div>'
@@ -813,14 +847,14 @@ function renderMarket(){
             +(l.motor?'<span class="sp">'+esc(l.motor)+'</span>':'')
             +(l.seats?'<span class="sp">'+l.seats+' Seat</span>':'')
             +(l.topSpeed?'<span class="sp">'+l.topSpeed+' mph</span>':'')
-            +(l.range?'<span class="sp">'+l.range+' mi range</span>':'')
+            +(l.range?'<span class="sp">'+l.range+' mi</span>':'')
           +'</div>'
-          +'<div class="feats">'+l.features.slice(0,3).map(function(f){return'<span class="ft">'+esc(f)+'</span>';}).join('')+'</div>'
+          +'<div class="feats">'+((l.features||[]).slice(0,3).map(function(f){return'<span class="ft">'+esc(f)+'</span>';})).join('')+'</div>'
           +'<div class="card-seller">'+esc(l.seller)+' · '+esc(l.condition)+'</div>'
           +'<div class="card-loc">📍 '+esc(l.loc)+'</div>'
         +'</div>'
         +'<div class="card-acts">'
-          +'<button class="cbtn cbtn-p" onclick="event.stopPropagation();openCart('+l.id+')">View Details</button>'
+          +'<button class="cbtn cbtn-p" onclick="event.stopPropagation();openCart(\''+l.id+'\')">View Details</button>'
           +'<button class="cbtn cbtn-g" onclick="event.stopPropagation();toast(\'Saved ✓\')">Save</button>'
         +'</div>'
       +'</div>';
@@ -830,6 +864,12 @@ function renderMarket(){
   return h;
 }
 
+function sortListings(val){
+  if(val==='price_asc')LISTINGS.sort(function(a,b){return(a.price||0)-(b.price||0);});
+  else if(val==='price_desc')LISTINGS.sort(function(a,b){return(b.price||0)-(a.price||0);});
+  renderMain();
+}
+
 // ═══════════════════════════════════════
 // LIVE MARKETPLACE SEARCH
 // ═══════════════════════════════════════
@@ -837,30 +877,63 @@ function runMarketplaceLiveSearch(){
   var q=document.getElementById('mkt-live-inp')?document.getElementById('mkt-live-inp').value.trim():'';
   var cond=document.getElementById('mkt-live-cond')?document.getElementById('mkt-live-cond').value:'';
   var resEl=document.getElementById('mkt-live-results');
-  if(!q){toast('Enter a cart to search!');return;}
-  var enc=encodeURIComponent(q);
+
+  // Also pull in sidebar filters to enrich the search
+  var brand=S.flt.brand||'';
+  var motor=S.flt.motor||'';
+  var seats=S.flt.seats||'';
+  var condition=S.flt.condition||cond||'';
+  var minP=S.flt.minP||'';
+  var maxP=S.flt.maxP||'';
+
+  // Build a rich query string incorporating filters
+  var parts=[q,brand,motor,seats?(seats+' passenger'):'',condition].filter(Boolean);
+  var fullQ=parts.join(' ').trim()||'golf cart';
+  if(!fullQ||fullQ==='golf cart'){toast('Enter a cart to search or set some filters first!');return;}
+
+  var enc=encodeURIComponent(fullQ+' golf cart');
+  var encBase=encodeURIComponent(fullQ);
+
   var sites=[
-    {name:'eBay Motors',ico:'🔵',color:'#e53238',desc:'Auctions & Buy It Now · Largest golf cart selection',url:'https://www.ebay.com/sch/i.html?_nkw='+enc+'+golf+cart&_sacat=6047'},
-    {name:'Facebook Marketplace',ico:'📘',color:'#1877f2',desc:'Local private sellers near you',url:'https://www.facebook.com/marketplace/search/?query='+enc+'+golf+cart'},
-    {name:'Craigslist',ico:'📋',color:'#800000',desc:'Local classifieds · Great deals nearby',url:'https://www.craigslist.org/search/sss?query='+enc+'+golf+cart&sort=rel'},
-    {name:'Golf Cart Trader',ico:'🛻',color:'#b8f241',desc:'#1 dedicated golf cart marketplace',url:'https://www.golfcarttrader.com/search?q='+enc},
-    {name:'CarGurus',ico:'🔍',color:'#e8600e',desc:'Price analysis & deal ratings',url:'https://www.cargurus.com/Cars/new/filterFacets.action?localSearchQuery='+enc+'+golf+cart'},
-    {name:'Golf Cart Resource',ico:'⛳',color:'#22c55e',desc:'Dealer network & used cart listings',url:'https://www.golfcartresource.com/golf-cart-dealers/?s='+enc},
-    {name:'Offer Up',ico:'🟢',color:'#0aaf0a',desc:'Local & shipped listings nationwide',url:'https://offerup.com/search/?q='+enc+'+golf+cart'},
-    {name:'Amazon',ico:'📦',color:'#ff9900',desc:'New carts & accessories',url:'https://www.amazon.com/s?k='+enc+'+golf+cart'},
-    {name:'Golf Cart King',ico:'👑',color:'#ffcc00',desc:'New cart dealer · Ships nationwide',url:'https://www.golfcartking.com/search?q='+enc},
-    {name:'EZGO Official',ico:'🏌️',color:'#003087',desc:'Factory new EZ-GO carts & dealer locator',url:'https://www.ezgo.com/'},
-    {name:'Club Car Official',ico:'🚗',color:'#cc0000',desc:'Factory new Club Car carts & dealers',url:'https://www.clubcar.com/us/en/consumer/find-dealer.html'},
-    {name:'Google Search',ico:'🌐',color:'#4285f4',desc:'Full web search for all listings',url:'https://www.google.com/search?q='+enc+'+golf+cart+for+sale'+(cond?'+'+cond:'')},
+    {name:'Golf Cart Trader',ico:'🛻',color:'#b8f241',desc:'#1 dedicated golf cart marketplace · Dealers & private sellers',
+     url:'https://www.golfcarttrader.com/search?q='+encBase+(brand?'&make='+encodeURIComponent(brand):'')},
+    {name:'eBay Motors',ico:'🔵',color:'#e53238',desc:'Largest selection · Auctions & Buy It Now'+(minP||maxP?' · Price filtered':''),
+     url:'https://www.ebay.com/sch/i.html?_nkw='+enc+'&_sacat=6047'+(minP?'&_udlo='+minP:'')+(maxP?'&_udhi='+maxP:'')+(condition==='new'?'&LH_ItemCondition=1000':'')},
+    {name:'Facebook Marketplace',ico:'📘',color:'#1877f2',desc:'Local private sellers near you · No fees',
+     url:'https://www.facebook.com/marketplace/search/?query='+enc+(minP?'&minPrice='+minP:'')+(maxP?'&maxPrice='+maxP:'')},
+    {name:'Craigslist',ico:'📋',color:'#800000',desc:'Local classifieds · Best for nearby deals',
+     url:'https://www.craigslist.org/search/sss?query='+enc+(minP?'&min_price='+minP:'')+(maxP?'&max_price='+maxP:'')+'&sort=rel'},
+    {name:'Golf Cart Resource',ico:'⛳',color:'#22c55e',desc:'Verified dealer network across the US',
+     url:'https://www.golfcartresource.com/golf-cart-dealers/?s='+encBase},
+    {name:'Golf Cart King',ico:'👑',color:'#f59e0b',desc:'New carts · Ships nationwide · All major brands',
+     url:'https://www.golfcartking.com/search?q='+encBase},
+    {name:'OfferUp',ico:'🟢',color:'#0aaf0a',desc:'Local & national used cart listings',
+     url:'https://offerup.com/search/?q='+enc},
+    {name:'Amazon',ico:'📦',color:'#ff9900',desc:'New carts & kits from verified sellers',
+     url:'https://www.amazon.com/s?k='+enc},
+    {name:'EZGO Official',ico:'🏌️',color:'#003087',desc:'Factory new EZ-GO carts · Find a dealer',
+     url:'https://www.ezgo.com/'},
+    {name:'Club Car Official',ico:'🚗',color:'#cc0000',desc:'Factory new Club Car · Dealer locator',
+     url:'https://www.clubcar.com/us/en/consumer/find-dealer.html'},
+    {name:'Yamaha Golf Cars',ico:'🏎️',color:'#1e3a8a',desc:'Official Yamaha golf cart dealer finder',
+     url:'https://www.yamahamotor.com/golf-cars/'},
+    {name:'Google Search',ico:'🌐',color:'#4285f4',desc:'Full web search across all listings',
+     url:'https://www.google.com/search?q='+enc+'+for+sale'+(minP?'+over+$'+minP:'')+(maxP?'+under+$'+maxP:'')},
   ];
-  resEl.innerHTML='<div class="live-grid">'+sites.map(function(s){
-    return '<a href="'+s.url+'" target="_blank" rel="noopener" class="live-card" style="border-left-color:'+s.color+'">'
-      +'<div class="lc-ico" style="background:'+s.color+'20">'+s.ico+'</div>'
-      +'<div><div class="lc-name">'+s.name+'</div><div class="lc-desc">'+s.desc+'</div></div>'
-      +'<div class="lc-arrow" style="color:'+s.color+'">→</div>'
-      +'</a>';
-  }).join('')+'</div>'
-  +'<div class="tip-box">💡 <strong>Tip:</strong> Golf Cart Trader and eBay Motors have the largest selections. For local deals, check Facebook Marketplace and Craigslist first.</div>';
+
+  resEl.innerHTML='<div style="margin-top:1rem">'
+    +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:18px;color:var(--txt);margin-bottom:.4rem;letter-spacing:.5px">'
+    +'Searching <span style="color:var(--lime)">'+sites.length+' sites</span> for: <span style="color:var(--txt2)">'+esc(fullQ)+'</span></div>'
+    +'<div style="font-size:11px;color:var(--txt3);margin-bottom:.8rem">Click any site to see matching listings with your filters pre-applied</div>'
+    +'<div class="live-grid">'+sites.map(function(s){
+      return '<a href="'+s.url+'" target="_blank" rel="noopener" class="live-card" style="border-left-color:'+s.color+'">'
+        +'<div class="lc-ico" style="background:'+s.color+'20">'+s.ico+'</div>'
+        +'<div><div class="lc-name">'+s.name+'</div><div class="lc-desc">'+s.desc+'</div></div>'
+        +'<div class="lc-arrow" style="color:'+s.color+'">→</div>'
+        +'</a>';
+    }).join('')+'</div>'
+    +'<div class="tip-box">💡 <strong>Tip:</strong> Golf Cart Trader and eBay Motors have the largest selections. Facebook Marketplace and Craigslist are best for local deals with no fees.</div>'
+    +'</div>';
   toast('Searching '+sites.length+' golf cart sites! 🛻');
 }
 
@@ -1242,7 +1315,7 @@ function renderSell(){
 // MODALS
 // ═══════════════════════════════════════
 function openCart(id){
-  var l=LISTINGS.find(function(x){return x.id===id;});if(!l)return;
+  var l=LISTINGS.find(function(x){return String(x.id)===String(id);});if(!l)return;
   var pStr=l.type==='rent'?fmt(l.price)+' / '+(l.rentUnit||'day'):fmt(l.price);
   var ctaLbl={buy:'Contact Seller',sell:'Make an Offer',trade:'Propose a Trade',rent:'Reserve This Cart'}[l.type]||'Contact';
   var h='<div class="m-hd"><div class="m-title">'+esc(l.year+' '+l.brand+' '+l.model)+'</div><div class="m-close" onclick="closeModal()">✕</div></div>'
