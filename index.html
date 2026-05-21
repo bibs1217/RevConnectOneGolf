@@ -534,11 +534,19 @@ function getFilteredListings(){
     if(fMinP      && l.price<parseInt(fMinP)) return false;
     if(fMaxP      && l.price>parseInt(fMaxP)) return false;
     if(fLoc){
+      // Strip common suffixes and make flexible
       var locQ=fLoc.toLowerCase()
-        .replace(' county','').replace(', fl','').replace(', ga','').replace(', tx','').replace(', nc','').replace(', sc','').trim();
+        .replace(' county','').replace(', fl','').replace(', ga','').replace(', tx','')
+        .replace(', nc','').replace(', sc','').replace(', ca','').replace(' fl','')
+        .trim();
       var county=getCounty(l.loc).toLowerCase();
-      var locStr=(l.loc+' '+county).toLowerCase();
-      if(locStr.indexOf(locQ)<0) return false;
+      var locFull=(l.loc+' '+county).toLowerCase();
+      // Match if ANY word in the search is found in the location string
+      var words=locQ.split(/\s+/).filter(Boolean);
+      var matched=words.some(function(w){return locFull.indexOf(w)>=0;});
+      // Online listings always show when filtering by location
+      if(l.loc.toLowerCase().indexOf('online')>=0||l.loc.toLowerCase().indexOf('nationwide')>=0) matched=true;
+      if(!matched) return false;
     }
     if(q){
       var str=(l.brand+' '+l.model+' '+l.seller+' '+l.loc+' '+l.color+' '+(l.features||[]).join(' ')).toLowerCase();
@@ -624,7 +632,7 @@ function renderMarketplace(){
   if(tags.length){
     h+='<div class="active-filters"><span class="af-label">Active:</span>';
     tags.forEach(function(t){h+='<span class="af-tag">'+esc(t)+'</span>';});
-    h+='<span class="af-clear" id="btn-clear">✕ Clear all</span></div>';
+    h+='<span class="af-clear" onclick="clearFilters()">✕ Clear all</span></div>';
   }
 
   // Sub tabs (only show when no filters active)
@@ -641,7 +649,7 @@ function renderMarketplace(){
   if(!items.length){
     h+='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No Local Listings Found</div>';
     h+='<div class="empty-s">No sample listings match your search in this area.<br><br>Use the <strong style="color:var(--lime)">Search All Sites</strong> panel above to find real listings from dealers and private sellers nationwide on Golf Cart Trader, eBay Motors, Facebook Marketplace, Craigslist and more.</div>';
-    h+='<button class="empty-btn" id="btn-clear">Clear Filters</button></div>';
+    h+='<button class="empty-btn" onclick="clearFilters()">Clear Filters</button></div>';
   } else {
     h+='<div class="grid">';
     items.forEach(function(l){
